@@ -1,0 +1,70 @@
+<app-header />
+<ul class="w-full flex flex-row justify-evenly space-x-4">
+  @for (item of buttons; track $index) {
+  <button (click)="onSelect(item.route)"
+    class="bg-amber-100 p-4 w-full max-w-xs border-2 border-black rounded-lg hover:bg-amber-300">
+    {{ item.name }}
+  </button>
+  }
+</ul>
+
+<!--    extern div   -->
+<div class="w-full max-h-11/12 flex flex-col items-center">
+
+  <!--    intern div   -->
+  <div class="w-3/6 mx-auto">
+
+    <!--    header   -->
+    <div class="w-full mt-6 text-left bg-amber-100 px-5 py-4">
+      <h1 class="font-extrabold text-2xl">Turnstile Management</h1>
+      <p class="font-bold">Control access and monitor turnstile activity</p>
+    </div>
+
+    <!--    forms and info section   -->
+    <div class="w-full mt-1 text-left bg-white px-5 py-6">
+      <div class="flex flex-row gap-6">
+        <!-- Forms section -->
+        <div class="w-1/2">
+            <form [formGroup]="checkoutForm" class="flex flex-col justify-between space-y-8">
+            <div class="flex flex-col">
+              <span>Insert your Badge</span>
+              <input formControlName="badgeId" type="text" [placeholder]="'Your Badge ID'"
+                class="p-2 border border-gray-300 rounded" />
+            </div>
+            <div class="flex flex-col">
+              <span>Choose the turnstile you want to use</span>
+              <input formControlName="turnstileId" type="text"  [placeholder]="'Choose Turnstile ID'" class="p-2 border border-gray-300 rounded" />
+            </div>
+            <!--    buttons   -->
+              <div class="w-full flex justify-between gap-2">
+                <button [ngStyle]="{ 'cursor': !checkoutForm.valid ? 'not-allowed' : 'pointer' }"
+                        [disabled]="!checkoutForm.valid"
+                        (click)="onSubmit('enter')"
+                        class="w-full bg-amber-100 border border-black p-2">
+                  Enter
+                </button>
+                <button [ngStyle]="{ 'cursor': !checkoutForm.valid ? 'not-allowed' : 'pointer' }"
+                        [disabled]="!checkoutForm.valid"
+                        (click)="onSubmit('exit')"
+                        class="w-full bg-amber-100 border border-black p-2">
+                  Exit
+                </button>
+              </div>
+          </form>
+        </div>
+
+        <!-- Information section -->
+        <div class="w-1/2 bg-gray-50 p-4 rounded">
+          <h3 class="font-bold mb-2">Information</h3>
+          <div class="space-y-2">
+            <p><span class="font-semibold">Last entry:</span> {{lastEntry}}</p>
+            <p><span class="font-semibold">Status:</span> {{msgStatus}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>

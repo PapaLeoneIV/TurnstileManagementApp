@@ -1,0 +1,45 @@
+<!-- Main container with sidebar and table -->
+<app-header />
+<ul class="w-full flex flex-row justify-evenly space-x-4">
+  @for (item of buttons; track $index) {
+    <button (click)="onSelect(item.route)" class="bg-amber-100 p-4 w-full max-w-xs border-2 border-black rounded-lg hover:bg-amber-300">
+      {{item.name}}
+    </button>
+  }
+</ul>
+<button
+  (click)="toggleSidebar()"
+  class="w-1/7 bg-amber-200 text-black rounded px-6 py-2 text-lg font-semibold hover:bg-amber-300 transition duration-300"
+>   {{ isOpen ? 'Close Filter Menu' : 'Open Filter Menu' }}
+</button>
+
+
+
+<div class="flex h-full relative bg-stone-500">
+
+  <!-- side navigation bar -->
+  <div
+    [ngClass]="{ 'w-1/6': isOpen, 'w-0': !isOpen, 'opacity-0': !isOpen, 'opacity-100': isOpen }"
+    class="z-1 top-0 left-0 overflow-x-hidden pt-1 transition-all duration-1000 justify-center items-start h-min"
+  >
+    <app-filter-list
+      [ngClass]="{ 'hidden': !isOpen ,'w-full': isOpen, 'w-0': !isOpen }"
+      class=" text-center justify-center align-middle t-0"/>
+
+    <!-- separator line -->
+    <div *ngIf="isOpen"
+         class=" border-b-8 border-amber-300 w-full h-10 mt-4"></div>
+    <div *ngIf="isOpen"
+         class="table m-auto">
+      <span class="text-2xl font-bold">Additional Filters</span>
+    </div>
+    <div *ngIf="isOpen" class="border-t-8 border-amber-300 w-full h-10 mt-1"></div>
+  <!-- additional filter for granular research -->
+    <app-additional-filters  [ngClass]="{ 'hidden': !isOpen ,'w-full': isOpen, 'w-0': !isOpen }"/>
+  </div>
+
+  <!-- main table component with proper scroll container -->
+  <div class="flex duration-500 bg-stone-300 w-full">
+    <app-table-container class="transition-mleft w-full" />
+  </div>
+</div>

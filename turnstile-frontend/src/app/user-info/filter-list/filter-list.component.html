@@ -1,0 +1,9 @@
+<ul class="flex flex-col h-full space-y-2">
+  @for (item of filters; track $index) {
+    <li class="w-full">
+      <button (click)="updateData(item.name)" class="btn-filter w-full rounded-lg border-2 border-amber-400 bg-amber-100 hover:bg-amber-300 hover:shadow-md text-lg font-medium text-gray-800 px-4 py-2 ">
+        {{item.name}}
+      </button>
+    </li>
+  }
+</ul>
