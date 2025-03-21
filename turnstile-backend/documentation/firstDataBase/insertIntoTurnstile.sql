@@ -1,0 +1,3 @@
+INSERT INTO TURNSTILE(available) VALUES (
+'TRUE'
+);

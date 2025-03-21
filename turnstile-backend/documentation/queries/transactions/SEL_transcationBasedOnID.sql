@@ -1,0 +1,9 @@
+-- get all events of a specific transaction
+SELECT
+    TE.STATE,
+    TE.CREATED_AT
+FROM
+    TRANSACTION_EVENT AS TE
+JOIN TRANSACTIONS AS T ON TE.TRANSACTION_ID = T.ID
+WHERE
+    T.ID = 1;
