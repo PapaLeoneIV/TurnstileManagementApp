@@ -10,6 +10,8 @@
       "@feature/*": ["app/feature/*"],
       "@shared/*": ["app/shared/*"],
       "@utils/*": ["app/utils/*"],
+      "@enviroment/*": ["app/enviroment/*"],
+
       },
     "outDir": "./dist/out-tsc",
     "strict": true,
