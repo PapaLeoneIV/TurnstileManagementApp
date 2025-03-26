@@ -1,6 +1,6 @@
 import { Component, Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {UserDTO} from '../../../models/dto/user-dto';
+import { UserDTO } from '@core/dto/user-dto';
 @Component({
   selector: 'app-table',
   standalone: true,

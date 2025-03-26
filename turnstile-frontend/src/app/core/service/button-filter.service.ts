@@ -1,6 +1,5 @@
 import { Injectable, EventEmitter  } from "@angular/core";
-import {UserDTO} from '../models/dto/user-dto';
-import {ApiResponse} from '../models/api-response';
+import {UserDTO} from '@core/dto/user-dto';
 @Injectable({
     providedIn: "root"
 })

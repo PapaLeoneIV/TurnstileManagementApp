@@ -1,10 +1,12 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {ButtonFilterService, MainFilterService} from '../../../service/button-filter.service';
-import {DataService} from '../../../service/data.service';
-import {queryFilters as qf, userType} from '../../../models/enum';
-import {UserDTO} from '../../../models/dto/user-dto';
+import {ButtonFilterService, MainFilterService} from '@core/service/button-filter.service';
+import {UserService} from '@core/service/user.service';
+import {queryFilters as qf, userType} from '@shared/models/enum';
+import {UserDTO} from '@core/dto/user-dto';
 import {Observable, Subject, takeUntil, take} from 'rxjs';
-import {ApiResponse} from '../../../models/api-response';
+import {ApiResponse} from '@shared/models/api-response';
+import { CompanyService } from '@core/service/company.service';
+import { RoleService } from '@core/service/role.service'
 
 @Component({
   selector: 'app-additional-filters',
@@ -12,15 +14,16 @@ import {ApiResponse} from '../../../models/api-response';
   styleUrl: './additional-filters.component.css'
 })
 export class AdditionalFiltersComponent implements OnInit, OnDestroy {
-  data: UserDTO[] = [];
-  additionFilters: string[] = [];
   mainFilter: string = "";
+  additionFilters: string[] = [];
+  
   private destroy$ = new Subject<void>();
-
   constructor(
     private buttonFilterService: ButtonFilterService,
     private mainFilterService: MainFilterService,
-    private dataService: DataService) {}
+    private dataService: UserService,
+    private companyService: CompanyService,
+    private roleService: RoleService) {}
 
   ngOnInit() {
     this.mainFilterService.ee.pipe(takeUntil(this.destroy$)).subscribe((mainFilter) => this.updateAdditionFilters(mainFilter));
@@ -58,11 +61,11 @@ export class AdditionalFiltersComponent implements OnInit, OnDestroy {
         return;
 
       case qf.BY_ROLE:
-        observable = this.dataService.getRoleList();
+        observable = this.roleService.getRoleList();
         break;
 
       case qf.BY_COMPANY:
-        observable = this.dataService.getCompanyList();
+        observable = this.companyService.getCompanyList();
         break;
     }
 

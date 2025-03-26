@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EntExitBtnComponent } from './ent-exit-btn.component';
+import { LogoutComponent } from './logout.component';
 
-describe('EntExitBtnComponent', () => {
-  let component: EntExitBtnComponent;
-  let fixture: ComponentFixture<EntExitBtnComponent>;
+describe('LogoutComponent', () => {
+  let component: LogoutComponent;
+  let fixture: ComponentFixture<LogoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EntExitBtnComponent]
+      imports: [LogoutComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EntExitBtnComponent);
+    fixture = TestBed.createComponent(LogoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
