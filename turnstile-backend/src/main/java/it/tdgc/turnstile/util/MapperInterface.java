@@ -9,29 +9,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface MapperInterface {
 
-    MapperInterface INSTANCE = Mappers.getMapper(MapperInterface.class);
-
-//    @Mapping(source = "id", target = "id")
-//    @Mapping(source = "user.name", target = "name")
-//    @Mapping(source = "user.surname", target = "surname")
-//    @Mapping(source = "user.email", target = "email")
-//    @Mapping(source = "role", target = "role")
-//    @Mapping(source = "company", target = "company")
-//    @Mapping(source = "badge", target = "badge")
-//    @Mapping(source = "permission", target = "permission")
-//    EmployeeDTO toEmployeeDto(Employee employee);
-//
-//
-//    @Mapping(source = "id", target = "id")
-//    @Mapping(source = "user.name", target = "name")
-//    @Mapping(source = "user.surname", target = "surname")
-//    @Mapping(source = "user.email", target = "email")
-//    @Mapping(source = "role", target = "role")
-//    @Mapping(source = "company", target = "company")
-//    @Mapping(source = "badge", target = "badge")
-//    @Mapping(source = "permission", target = "permission")
-//    VisitorDTO toVisitorDto(Visitor visitor);
-
     @Mapping(source="state", target="state")
     @Mapping(source="created_at", target="created_at")
     @Mapping(source="transaction", target="transaction")
@@ -49,14 +26,6 @@ public interface MapperInterface {
     @Mapping(source="address", target="address")
     CompanyDTO toCompanyDTO(Company company);
 
-//    @Mapping(source="numOfUsers", target="totUsersInsideOffice")
-//    InsideOfficeDTO toInsideOfficeDTONumOfUsers(Integer numOfUsers);
-
-//    @Mapping(source="allowed_enter_time", target="allowed_enter_time")
-//    @Mapping(source="allowed_exit_time", target="allowed_exit_time")
-//    @Mapping(source="end_of_permission", target="end_of_permission")
-//    PermissionDTO toPermissionDTO(Permission permission);
-
     @Mapping(source="id", target="id")
     @Mapping(source="available", target="available")
     TurnstileDTO toTurnstileDTO(Turnstile turnstile);
@@ -73,10 +42,24 @@ public interface MapperInterface {
     @Mapping(source = "role", target = "role")
     UserDTO toUserDTO(Users user);
 
-    @Mapping(source="id", target="id")
     @Mapping(source="rfid", target="rfid")
+    @Mapping(source="allowed_enter_time", target="allowed_enter_time")
+    @Mapping(source="allowed_exit_time", target="allowed_exit_time")
+    @Mapping(source = "expiry", target = "expiry")
     BadgeDTO toBadgeDTO(Badge badge);
 
 
+    @Mapping(source = "rfid", target = "rfid")
+    @Mapping(source = "allowed_enter_time", target = "allowed_enter_time")
+    @Mapping(source = "allowed_exit_time", target = "allowed_exit_time")
+    @Mapping(source = "expiry", target = "expiry")
+    Badge toBadge(BadgeDTO badgeDTO);
 
+    @Mapping(source = "level", target = "level")
+    @Mapping(source = "description", target = "description")
+    Role toRole(RoleDTO roleDTO);
+
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "address", target = "address")
+    Company toCompany(CompanyDTO companyDTO);
 }

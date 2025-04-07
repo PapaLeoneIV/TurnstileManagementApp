@@ -1,45 +1,44 @@
-// package it.tdgc.turnstile.controller;
-
-// import java.util.Date;
-
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.RequestMapping;
-// import org.springframework.web.bind.annotation.RestController;
-
-// import it.tdgc.turnstile.service.UserService;
-// import it.tdgc.turnstile.util.ApiResponse;
-// import it.tdgc.turnstile.util.MapperInterface;
-// import jakarta.transaction.Transactional;
-
-// @RestController
-// @Transactional
-// @RequestMapping(path = "/user")
-// public class UserController {
-
-//     private final UserService userService;
-//     private final MapperInterface mapperInterface;
-
-//     public UserController(UserService userService, MapperInterface mapperInterface) {
-//         this.userService = userService;
-//         this.mapperInterface = mapperInterface;
-//     }
+package it.tdgc.turnstile.controller;
 
 
-    
+import it.tdgc.turnstile.dto.UserDTO;
+import it.tdgc.turnstile.dto.UserInsertDTO;
+import it.tdgc.turnstile.model.Users;
+import it.tdgc.turnstile.service.UserService;
+import it.tdgc.turnstile.util.ApiResponse;
+import it.tdgc.turnstile.util.MapperInterface;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-//     // //TODO move into an interface
-//     // private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-//     //     ApiResponse<T> response = new ApiResponse<>(
-//     //             String.valueOf(status.value()),
-//     //             message,
-//     //             data,
-//     //             new Date(),
-//     //             null
-//     //     );
-//     //     return ResponseEntity.status(status).body(response);
-//     }
-// //
+import java.util.Date;
+
+@RestController
+ @Transactional
+ @RequestMapping(path = "/user")
+ public class UserController {
+
+     private final UserService userService;
+
+     public UserController(UserService userService) {
+         this.userService = userService;
+     }
+
+      private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
+          ApiResponse<T> response = new ApiResponse<>(
+                  String.valueOf(status.value()),
+                  message,
+                  data,
+                  new Date(),
+                  null
+          );
+          return ResponseEntity.status(status).body(response);
+     }
+
 // //
 // //    @GetMapping("/company")
 // //    public ResponseEntity<ApiResponse<List<UserDTO>>> groupUserByCompany(){
@@ -62,8 +61,8 @@
 // //        return userService.updateUser(user);
 // //    }
 // //
-// //    @PostMapping("/insert")
-// //    public ResponseEntity<ApiResponse<UserDTO>> insertUser(@RequestBody Users user) {
-// //        return userService.insertUser(user);
-// //    }
-// }
+    @PostMapping("/insert")
+    public ResponseEntity<ApiResponse<Users>> insertUser(@RequestBody UserInsertDTO userInsertDTO) {
+        return userService.insert(userInsertDTO);
+    }
+ }

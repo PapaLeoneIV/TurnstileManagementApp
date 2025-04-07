@@ -16,7 +16,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BadgeDTO {
-    private Integer id;
     private String rfid;
     private LocalTime allowed_enter_time;
     private LocalTime allowed_exit_time;

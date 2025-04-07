@@ -2,11 +2,14 @@
 <app-header />
 <ul class="w-full flex flex-row justify-evenly space-x-4">
   @for (item of buttons; track $index) {
-    <button (click)="onSelect(item.route)" class="bg-amber-100 p-4 w-full max-w-xs border-2 border-black rounded-lg hover:bg-amber-300">
+    <button [routerLink]="item.route" class="bg-amber-100 p-4 w-full max-w-xs border-2 border-black rounded-lg hover:bg-amber-300">
       {{item.name}}
     </button>
   }
 </ul>
+
+
+
 <button
   (click)="toggleSidebar()"
   class="w-1/7 bg-amber-200 text-black rounded px-6 py-2 text-lg font-semibold hover:bg-amber-300 transition duration-300"

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '@shared/components/header/header.component';
 import { NAV_BUTTON_LIST } from '@shared/models/nav-button-list';
-import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { DoorManService } from '@core/service/doorman-service';
 import { ApiResponse } from '@shared/models/api-response';
@@ -9,10 +8,10 @@ import { TransactionDTO } from '@core/dto/transaction-dto';
 import { NgStyle } from '@angular/common';
 import { Validators } from '@angular/forms';
 import { TransactionService } from '@core/service/transaction.service';
-
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-homepage',
-  imports: [HeaderComponent, ReactiveFormsModule, NgStyle],
+  imports: [HeaderComponent, ReactiveFormsModule, NgStyle, RouterLink],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.css'
 })
@@ -28,7 +27,6 @@ export class HomepageComponent implements OnInit {
   constructor(
     private doormanService: DoorManService,
     private transactionService: TransactionService,
-    private router: Router,
     private formBuilder: FormBuilder) {
     this.checkoutForm = this.formBuilder.group({
       badgeId: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.min(1)]],
@@ -57,11 +55,6 @@ export class HomepageComponent implements OnInit {
     });
   }
 
-
-
-  onSelect(route: string) {
-    this.router.navigate([route]);
-  }
 
   onSubmit(val: string) {
     const { badgeId, turnstileId } = this.checkoutForm.value;

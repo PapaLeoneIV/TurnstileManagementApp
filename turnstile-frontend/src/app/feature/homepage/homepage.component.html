@@ -1,14 +1,14 @@
 <app-header />
 <ul class="w-full flex flex-row justify-evenly space-x-4">
   @for (item of buttons; track $index) {
-  <button (click)="onSelect(item.route)"
+  <button [routerLink]="item.route"
     class="bg-amber-100 p-4 w-full max-w-xs border-2 border-black rounded-lg hover:bg-amber-300">
     {{ item.name }}
   </button>
   }
 </ul>
 
-<!--    extern div   -->
+<!-- extern div -->
 <div class="w-full max-h-11/12 flex flex-col items-center">
 
   <!--    intern div   -->

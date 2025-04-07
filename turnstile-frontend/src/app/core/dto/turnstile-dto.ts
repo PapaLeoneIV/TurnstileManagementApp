@@ -1,10 +1,8 @@
 export class TurnstileDTO{
-  id: string;
-  available: boolean;
+  id = 0;
+  available = true;
 
-
-  constructor(id: string, available: boolean) {
-    this.id = id;
-    this.available = available;
+  constructor(init?: Partial<TurnstileDTO>) {
+    Object.assign(this, init);
   }
 }

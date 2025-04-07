@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import it.tdgc.turnstile.dto.*;
-import it.tdgc.turnstile.model.Users;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import it.tdgc.turnstile.service.DatabaseService;
 
 import it.tdgc.turnstile.service.InfoSearcherService;
 import it.tdgc.turnstile.service.TransactionService;
@@ -31,12 +30,29 @@ public class InfoSearcherController {
     final private InfoSearcherService infoSearchService;
     private final UserService userService;
     private final TransactionService transactionService;
+    private final DatabaseService databaseService;
 
-    public InfoSearcherController(InfoSearcherService infoSearchService, UserService userService, TransactionService transactionService){
+    public InfoSearcherController(InfoSearcherService infoSearchService,
+                                  UserService userService,
+                                  TransactionService transactionService,
+                                  DatabaseService databaseService){
         this.infoSearchService = infoSearchService;
         this.userService = userService;
         this.transactionService = transactionService;
+        this.databaseService = databaseService;
     }
+
+
+
+    @GetMapping("db/tables/name")
+    public ResponseEntity<ApiResponse<List<String>>> getTableNames(){
+        List<String> tableNames =  databaseService.getTableNames();
+        if(tableNames == null || tableNames.isEmpty()){
+            return buildResponse(HttpStatus.OK, "No table were found!", null);
+        }
+        return buildResponse(HttpStatus.OK, "OK", tableNames);
+    }
+
 
     @PostMapping("users/companyName")
     public ResponseEntity<ApiResponse<List<UserDTO>>> getUserByCompanyName(@RequestBody CompanyNameDTO companyNameDTO){

@@ -1,9 +1,8 @@
 export  class RoleDTO {
-    description: string;
-    level: number;
+    description = "";
+    level = 0;
 
-    constructor(description: string, level: number) {
-        this.description = description;
-        this.level = level;
-    }
+    constructor(init?: Partial<RoleDTO>) {
+        Object.assign(this, init);
+      }
 }

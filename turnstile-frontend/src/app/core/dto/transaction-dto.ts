@@ -2,20 +2,14 @@ import {UserDTO} from './user-dto';
 import {TurnstileDTO} from './turnstile-dto';
 
 export class TransactionDTO {
-    id: number;
-   date: string;
-   time: string;
-   current_state : string;
-   user: UserDTO;
-   turnstile: TurnstileDTO;
+   id = 0;
+   date = "";
+   time = "";
+   current_state  = "";
+   user = new UserDTO();
+   turnstile = new TurnstileDTO();
 
-   constructor(id: number, date: string, time: string, current_state: string,  user: UserDTO, turnstile: TurnstileDTO) {
-     this.id = id;
-     this.date = date;
-     this.time = time;
-     this.current_state = current_state;
-     this.user = user;
-     this.turnstile = turnstile;
-
-   }
+    constructor(init?: Partial<TransactionDTO>) {
+      Object.assign(this, init);
+    }
 }

@@ -37,4 +37,6 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     @Query("SELECT u FROM Users u WHERE u.company.name = :name AND u.usertype = :userType")
     List<Users> findByCompany(@Param("name") String name, @Param("userType") String userType);
+
+    boolean existsUsersByEmail(String email);
 }
