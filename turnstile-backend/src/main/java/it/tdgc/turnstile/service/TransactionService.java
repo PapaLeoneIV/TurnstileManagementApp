@@ -1,25 +1,25 @@
 package it.tdgc.turnstile.service;
 
 import it.tdgc.turnstile.dto.TransactionDTO;
-import it.tdgc.turnstile.dto.TransactionEventDTO;
+import it.tdgc.turnstile.dto.TransactionInsertDTO;
 import it.tdgc.turnstile.model.Transaction;
-import it.tdgc.turnstile.model.TransactionEvent;
 import it.tdgc.turnstile.model.Turnstile;
 import it.tdgc.turnstile.model.Users;
 import it.tdgc.turnstile.repository.TransactionRepository;
+import it.tdgc.turnstile.repository.TurnstileRepository;
+import it.tdgc.turnstile.repository.UsersRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
+import it.tdgc.turnstile.util.responseBuilder;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +27,43 @@ import java.util.Optional;
 public class TransactionService {
     final private TransactionRepository transactionRepository;
     final private MapperInterface mapperInterface;
+    private final TurnstileRepository turnstileRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, MapperInterface mapperInterface) {
+    public TransactionService(TransactionRepository transactionRepository, MapperInterface mapperInterface, TurnstileRepository turnstileRepository, UsersRepository usersRepository) {
         this.transactionRepository = transactionRepository;
         this.mapperInterface = mapperInterface;
+        this.turnstileRepository = turnstileRepository;
+        this.usersRepository = usersRepository;
     }
 
+    @Transactional
+    public ResponseEntity<ApiResponse<TransactionDTO>> insertTransaction(TransactionInsertDTO transaction) {
+        if(transaction.getDate() == null || transaction.getTime() == null){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Date/Time cannot be null/empty!", null);
+        }
+        if(turnstileRepository.findById(transaction.getTurnstile_id()).isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Turnstile not found!", null);
+        }
+        if(usersRepository.findById(transaction.getUser_id()).isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "User not found!", null);
+        }
+        if(transaction.getCurrent_state() == null){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Current state cannot be null/empty!", null);
+        }
 
+        Transaction t = new Transaction();
+        t.setDate(transaction.getDate());
+        t.setTime(transaction.getTime());
+        t.setCurrent_state(transaction.getCurrent_state());
+        t.setUser(usersRepository.findById(transaction.getUser_id()).get());
+        t.setTurnstile(turnstileRepository.findById(transaction.getTurnstile_id()).get());
+
+        TransactionDTO tDTO = mapperInterface.toTransactionDto(transactionRepository.save(t));
+
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", tDTO);
+    }
 
 
     @Transactional
@@ -43,7 +72,7 @@ public class TransactionService {
         if(t.isEmpty()){
             return null;
         }
-        return mapperInterface.toTransactionDto(t.get(t.size()-1));
+        return mapperInterface.toTransactionDto(t.getLast());
     }
 
 
@@ -127,73 +156,6 @@ public class TransactionService {
                 .map(mapperInterface::toTransactionDto)
                 .toList();
     }
-
-//    @Transactional
-//    public ResponseEntity<ApiResponse<List<TransactionDTO>>> findByCompanyName(String companyName) {
-//        List<Transaction> transactions =  transactionRepository.findByCompanyName(companyName);
-//        if(transactions.isEmpty()) {
-//            return buildResponse(HttpStatus.NOT_FOUND, "Transaction with company name" + companyName + "not found", null);
-//        }
-//
-//        List<TransactionDTO> transactionDTO = transactions.stream()
-//                .map(mapperInterface::toTransactionDto)
-//                .toList();
-//        return buildResponse(HttpStatus.OK, "OK", transactionDTO);
-//
-//    }
-//
-//    @Transactional
-//    public ResponseEntity<ApiResponse<TransactionDTO>> getTransactionWithId(Integer id) {
-//        Optional<Transaction> transaction = transactionRepository.findById(id);
-//        if(transaction.isEmpty()) {
-//            return buildResponse(HttpStatus.NOT_FOUND, "Transaction id not found", null);
-//        }
-//        TransactionDTO transactionDTO = mapperInterface.toTransactionDto(transaction.get());
-//        return buildResponse(HttpStatus.OK, "OK", transactionDTO);
-//
-//    }
-//
-//    @Transactional
-//    public ResponseEntity<ApiResponse<List<TransactionDTO>>> getTransactionWithUserId(Integer userId) {
-//        List<Transaction> transaction = transactionRepository.findWithUserId(userId);
-//        if(transaction.isEmpty()) {
-//            return buildResponse(HttpStatus.NOT_FOUND, "Transaction id not found", null);
-//        }
-//        List<TransactionDTO> transactionDTO = transaction.stream()
-//                .map(mapperInterface::toTransactionDto)
-//                .toList();
-//        return buildResponse(HttpStatus.OK, "OK", transactionDTO);
-//    }
-//
-//    @Transactional
-//    public ResponseEntity<ApiResponse<List<TransactionDTO>>> getTransactionWithTurnstileId(Integer id){
-//        List<Transaction> transaction = transactionRepository.findWithTurnstileId(id);
-//        if(transaction.isEmpty()) {
-//            return buildResponse(HttpStatus.NOT_FOUND, "Transaction id not found", null);
-//        }
-//
-//        List<TransactionDTO> transactionDTO = transaction.stream()
-//                .map(mapperInterface::toTransactionDto)
-//                .toList();
-//
-//        return ResponseEntity.ok(new ApiResponse<>("200", "OK", transactionDTO, new Date(), null));
-//
-//    }
-
-//    @Transactional
-//    public ResponseEntity<ApiResponse<List<TransactionDTO>>> getTransactionWithCompanyId(Integer id) {
-//        List<Transaction> transaction = transactionRepository.findWithCompanyId(id);
-//        if(transaction.isEmpty()) {
-//            return buildResponse(HttpStatus.NOT_FOUND, "Transaction id not found", null);
-//        }
-//        List<TransactionDTO> transactionDTOs = transaction.stream()
-//                .map(mapperInterface::toTransactionDto)
-//                .toList();
-//        return buildResponse(HttpStatus.OK, "OK", transactionDTOs);
-//    }
-//    @Transactional
-
-
     @Transactional
     public Transaction updateTransaction(Integer transactionId, String newState) {
         Optional<Transaction> existingTransaction = transactionRepository.findById(transactionId);
@@ -212,9 +174,7 @@ public class TransactionService {
         t.setTime(time);
         t.setCurrent_state(newState);
 
-        Transaction newt =  transactionRepository.save(t);
-
-        return newt;
+        return transactionRepository.save(t);
     }
 
    @Transactional
@@ -230,14 +190,5 @@ public class TransactionService {
        return transactionRepository.save(transaction);
    }
 
-    private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-        ApiResponse<T> response = new ApiResponse<>(
-                String.valueOf(status.value()),
-                message,
-                data,
-                new Date(),
-                null
-        );
-        return ResponseEntity.status(status).body(response);
-    }
+
 }

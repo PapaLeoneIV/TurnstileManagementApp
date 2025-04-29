@@ -18,6 +18,7 @@ export class UserService {
 
   getByEmployee(): Observable<ApiResponse<UserDTO>> {
     const apiUrl = this.baseUrl + 'info/all_employees';
+
     return this.http.get<any>(apiUrl);
   }
 
@@ -47,7 +48,7 @@ export class UserService {
   getUserByRole(name: string): Observable<ApiResponse<UserDTO>> {
     const body = {
       "description": name,
-        "userType": "User"
+        "userType": "Employee"
     }
     const options = {
       headers: {

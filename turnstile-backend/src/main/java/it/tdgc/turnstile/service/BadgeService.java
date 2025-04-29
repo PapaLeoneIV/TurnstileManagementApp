@@ -6,6 +6,7 @@ import it.tdgc.turnstile.model.Badge;
 import it.tdgc.turnstile.repository.BadgeRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
+import it.tdgc.turnstile.util.responseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Optional;
 
@@ -104,18 +110,26 @@ public class BadgeService {
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<BadgeDTO>> insertBadge(Badge badge) {
-        Badge savedBadge;
-        try {
-            savedBadge = badgeRepository.save(badge);
-        } catch (DataIntegrityViolationException e) {
-            throw new BadgeAlreadyExistsException("Badge with the same RFID already exists.");
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while creating the badge, probably violated uniqueness", e);
+    public ResponseEntity<ApiResponse<BadgeDTO>> insertBadge(BadgeDTO badge) {
+        if(badge.getRfid().isEmpty() || badge.getRfid().isBlank()) {
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "The rfid cannot be empty", null);
+        }
+        if(badge.getAllowed_enter_time().isAfter(badge.getAllowed_exit_time())) {
+            return responseBuilder.buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, "The entered time cannot be after the exit", null);
+        }
+        if (badge.getExpiry().isBefore(ChronoLocalDate.from(LocalDateTime.now()))) {
+            return responseBuilder.buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, "The expiry time cannot be after the exit", null);
         }
 
+        Badge newBadge = new Badge();
+        newBadge.setRfid(badge.getRfid());
+        newBadge.setAllowed_enter_time(badge.getAllowed_enter_time());
+        newBadge.setExpiry(badge.getExpiry());
+        newBadge.setAllowed_exit_time(badge.getAllowed_exit_time());
+
+        Badge savedBadge = badgeRepository.save(newBadge);
         BadgeDTO badgeDTO = mapperInterface.toBadgeDTO(savedBadge);
 
-        return ResponseEntity.ok(new ApiResponse<>("200", "Badge created successfully", badgeDTO, new Date(), null));
+        return responseBuilder.buildResponse(HttpStatus.OK, "Badge created successfully", badgeDTO);
     }
 }

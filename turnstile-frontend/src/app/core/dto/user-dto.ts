@@ -4,7 +4,7 @@ import {BadgeDTO} from './badge-dto';
 
 export class UserDTO {
     usertype = "";
-    name= "";
+    name = "";
     surname= "";
     email= "";
     role = new RoleDTO();

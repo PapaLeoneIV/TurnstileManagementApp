@@ -35,4 +35,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     List<Transaction> findWithDateRange(@Param("dateStart") LocalDate dateStart, @Param("dateEnd")LocalDate dateEnd);
 
     List<Transaction> user(Users user);
+
+    Transaction getById(Integer id);
 }

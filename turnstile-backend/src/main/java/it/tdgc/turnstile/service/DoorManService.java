@@ -5,7 +5,7 @@ import it.tdgc.turnstile.dto.EnterInfoDTO;
 import it.tdgc.turnstile.model.*;
 import it.tdgc.turnstile.repository.*;
 import it.tdgc.turnstile.util.ApiResponse;
-import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryBuilderCustomizer;
+import it.tdgc.turnstile.util.responseBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,33 +51,33 @@ public class DoorManService {
             if (turnstile == null) {
                 String msg = "Turnstile ID " + enterInfo.getTurnstileId() + " is not valid";
                 errorLogService.createErrorLog(msg, null, null);
-                return buildResponse(HttpStatus.OK, msg, msg);
+                return responseBuilder.buildResponse(HttpStatus.OK, msg, msg);
             }
 
             if (!turnstile.isAvailable()) {
                 String msg = "The turnstile selected with Id: " + enterInfo.getTurnstileId() + " is not available";
                 errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), null);
-                return buildResponse(HttpStatus.OK, msg, null);
+                return responseBuilder.buildResponse(HttpStatus.OK, msg, null);
             }
 
             Badge badge = badgeRepository.findById(enterInfo.getBadgeId()).orElse(null);
             if (badge == null) {
                 String msg = "Badge ID " + enterInfo.getBadgeId() + " not found. Please register to enter.";
                 errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), null);
-                return buildResponse(HttpStatus.OK, msg, null);
+                return responseBuilder.buildResponse(HttpStatus.OK, msg, null);
             }
 
             Users user = usersRepository.findUsersByBadgeId(badge.getId()).orElse(null);
             if (user == null) {
                 String msg = "Badge ID " + enterInfo.getBadgeId() + " not found. Please register to enter.";
                 errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), null);
-                return buildResponse(HttpStatus.OK, msg, null);
+                return responseBuilder.buildResponse(HttpStatus.OK, msg, null);
             }
 
             if (insideOfficeService.isInsideOffice(user.getId())) {
                 String msg = "The user: " + user.getName() + " " + user.getSurname() + " with badge Rfid " + user.getBadge().getRfid() + " is already inside the office!";
                 errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), user);
-                return buildResponse(HttpStatus.OK, msg, null);
+                return responseBuilder.buildResponse(HttpStatus.OK, msg, null);
             }
             //-----SIMULATION----//
             Transaction transaction = transactionService.createTransaction(user, turnstile);
@@ -102,13 +102,13 @@ public class DoorManService {
             if ("COMPLETED".equals(lastEvent.getState())) {
                 transactionService.updateTransaction(transaction.getId(), lastEvent.getState());
                 insideOfficeService.addUser(user);
-                return buildResponse(HttpStatus.OK, "OK", "You are inside the office.");
+                return responseBuilder.buildResponse(HttpStatus.OK, "OK", "You are inside the office.");
             }
 
         String msg = "Unexpected error occurred during transaction processing: ";
         errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(),null);
         System.out.println("Exception during transaction processing");
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There has been an error", null);
+        return responseBuilder.buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There has been an error", null);
     }
 
     //TODO check expiry on badge
@@ -118,33 +118,33 @@ public class DoorManService {
             //TODO need to create error_log
             String msg = "Turnstile ID " + enterInfo.getTurnstileId() + " is not valid";
             errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), null);
-            return buildResponse(HttpStatus.OK, msg, null);
+            return responseBuilder.buildResponse(HttpStatus.OK, msg, null);
         }
         if (!turnstile.isAvailable()) {
             //TODO need to create error_log
             String msg = "The turnstile selected with Id: " + enterInfo.getTurnstileId() + " is not available";
             errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), null);
-            return buildResponse(HttpStatus.CONFLICT, msg, null);
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, msg, null);
         }
         Badge badge = badgeRepository.findById(enterInfo.getBadgeId()).orElse( null);
         if(badge == null){
             String msg = "Badge ID " + enterInfo.getBadgeId() + " not found. Please register to enter.";
             errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), null);
-            return buildResponse(HttpStatus.OK, msg, null);
+            return responseBuilder.buildResponse(HttpStatus.OK, msg, null);
         }
         Users user = usersRepository.findUsersByBadgeId(badge.getId()).orElse(null);
         if(user == null){
             //TODO need to create error_log
             String msg = "Badge ID " + enterInfo.getBadgeId() + " not found. Please register to enter.";
             errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), null);
-            return buildResponse(HttpStatus.OK, msg, null);
+            return responseBuilder.buildResponse(HttpStatus.OK, msg, null);
         }
         if(!insideOfficeService.isInsideOffice(user.getId()))
         {
             //TODO need to create error_log
             String msg = "The user : " + user.getName() + " " + user.getSurname() + " with badge Rfid " + user.getBadge().getRfid() + " is NOT inside the office!";
             errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), user);
-            return buildResponse(HttpStatus.CONFLICT, msg, null);
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, msg, null);
         }
 
 
@@ -168,25 +168,15 @@ public class DoorManService {
         if("COMPLETED".equals(lastEvent.getState())){
             transactionService.updateTransaction(transaction.getId(), lastEvent.getState());
             insideOfficeService.removeUser(user);
-            return buildResponse(HttpStatus.OK, "OK", "You have exited the office.");
+            return responseBuilder.buildResponse(HttpStatus.OK, "OK", "You have exited the office.");
         }
 
         String msg = "Unexpected error occurred. Please contact the administrator.";
         errorLogService.createErrorLog(msg, enterInfo.getTurnstileId(), user);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There has been an error", null);
+        return responseBuilder.buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There has been an error", null);
     }
 
-    private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-        ApiResponse<T> response = new ApiResponse<>(
-                String.valueOf(status.value()),
-                message,
-                data,
-                new Date(),
-                null
-        );
 
-        return ResponseEntity.status(status).body(response);
-    }
 }
 
 

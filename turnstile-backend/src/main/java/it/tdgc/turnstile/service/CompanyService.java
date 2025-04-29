@@ -5,6 +5,7 @@ import it.tdgc.turnstile.model.Company;
 import it.tdgc.turnstile.repository.CompanyRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
+import it.tdgc.turnstile.util.responseBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ public class CompanyService {
     final private CompanyRepository companyRepository;
     private final MapperInterface mapperInterface;
 
+
     @Autowired
     public CompanyService(CompanyRepository companyRepository, MapperInterface mapperInterface) {
         this.companyRepository = companyRepository;
@@ -30,10 +32,10 @@ public class CompanyService {
     public ResponseEntity<ApiResponse<List<CompanyDTO>>> getAllCompanies() {
         List<Company> c = companyRepository.findAll();
         if(c.isEmpty()) {
-            return buildResponse(HttpStatus.OK, "No companies found", null);
+            return responseBuilder.buildResponse(HttpStatus.OK, "No companies found", null);
         }
         List<CompanyDTO> cDTOS = c.stream().map(mapperInterface::toCompanyDTO).toList();
-        return buildResponse(HttpStatus.OK, "OK", cDTOS);
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", cDTOS);
     }
 
     @Transactional
@@ -79,23 +81,28 @@ public class CompanyService {
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<CompanyDTO>> insertCompany(Company company) {
-        Company savedCompany = companyRepository.save(company);
+    public ResponseEntity<ApiResponse<CompanyDTO>> insertCompany(CompanyDTO company) {
+        if(company.getAddress().isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Company address is empty", null);
+        }
+        if(company.getName().isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Company name is empty", null);
+        }
+        if(companyRepository.findByName(company.getName()).isPresent()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Company name already exists", null);
+        }
+        if(companyRepository.findByAddress(company.getAddress()).isPresent()){
+            return  responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Company address already exists", null);
+        }
+
+        Company newCompany = new Company();
+        newCompany.setName(company.getName());
+        newCompany.setAddress(company.getAddress());
+
+        Company savedCompany = companyRepository.save(newCompany);
         CompanyDTO companyDTO = mapperInterface.toCompanyDTO(savedCompany);
 
-        return ResponseEntity.ok(new ApiResponse<>("200", "Company created successfully", companyDTO, new Date(), null));
-    }
-
-    private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-        ApiResponse<T> response = new ApiResponse<>(
-                String.valueOf(status.value()),
-                message,
-                data,
-                new Date(),
-                null
-        );
-
-        return ResponseEntity.status(status).body(response);
+        return responseBuilder.buildResponse(HttpStatus.OK, "Company created successfully", companyDTO);
     }
 }
 

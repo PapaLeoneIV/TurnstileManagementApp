@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @Transactional
 @RequestMapping(path = "/badge")
@@ -46,7 +47,7 @@ public class BadgeController {
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<ApiResponse<BadgeDTO>> insertBadge(@RequestBody Badge badge) throws BadgeAlreadyExistsException {
+    public ResponseEntity<ApiResponse<BadgeDTO>> insertBadge(@RequestBody BadgeDTO badge) throws BadgeAlreadyExistsException {
         return badgeService.insertBadge(badge);
     }
 }

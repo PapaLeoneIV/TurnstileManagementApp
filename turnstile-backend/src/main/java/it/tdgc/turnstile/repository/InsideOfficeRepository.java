@@ -14,11 +14,4 @@ public interface InsideOfficeRepository extends JpaRepository<InsideOffice, Inte
     @Query("SELECT io FROM InsideOffice io WHERE io.user.id = :id")
     InsideOffice findByUserId(@Param("id") Integer id);
 
-    @Query(value = "SELECT id FROM inside_office ORDER BY id DESC LIMIT 1", nativeQuery = true)
-    Integer getLastId();
-
-//
-//    @Query("SELECT COUNT(io) FROM InsideOffice io")
-//    Integer getTotNumOfUsers();
-
 }

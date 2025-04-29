@@ -1,6 +1,6 @@
 export class TurnstileDTO{
-  id = 0;
-  available = true;
+  id = null;
+  available = null;
 
   constructor(init?: Partial<TurnstileDTO>) {
     Object.assign(this, init);

@@ -47,7 +47,7 @@ public class CompanyController {
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<ApiResponse<CompanyDTO>> insertCompany(@RequestBody Company company) {
+    public ResponseEntity<ApiResponse<CompanyDTO>> insertCompany(@RequestBody CompanyDTO company) {
         return companyService.insertCompany(company);
     }
 }

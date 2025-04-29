@@ -33,7 +33,7 @@ public class TransactionEvent {
      private String state;
     
     @Column(name = "created_at", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-     private LocalDateTime created_at;
+    private LocalDateTime created_at;
 
     @ManyToOne
     @JoinColumn(name = "transaction_id")

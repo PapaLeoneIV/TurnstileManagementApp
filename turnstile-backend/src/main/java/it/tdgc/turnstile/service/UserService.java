@@ -11,6 +11,7 @@ import it.tdgc.turnstile.repository.RoleRepository;
 import it.tdgc.turnstile.repository.UsersRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
+import it.tdgc.turnstile.util.responseBuilder;
 import org.apache.catalina.User;
 import org.apache.coyote.Response;
 import org.mapstruct.Mapper;
@@ -70,11 +71,11 @@ public class UserService {
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllEmployees(){
         List<Users> employees = usersRepository.findAllEmployees();
         if(employees.isEmpty()) {
-            return buildResponse(HttpStatus.OK, "No employees found", null);
+            return responseBuilder.buildResponse(HttpStatus.OK, "No employees found", null);
         }
 
         List<UserDTO> userDTOs = employees.stream().map(mapperInterface::toUserDTO).toList();
-        return buildResponse(HttpStatus.OK, "OK", userDTOs);
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", userDTOs);
     }
 
 
@@ -82,25 +83,40 @@ public class UserService {
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllVisitors(){
         List<Users> visitors = usersRepository.findAllVisitors();
         if(visitors.isEmpty()) {
-            return buildResponse(HttpStatus.OK, "No visitors found", null);
+            return responseBuilder.buildResponse(HttpStatus.OK, "No visitors found", null);
         }
 
         List<UserDTO> userDTOs = visitors.stream().map(mapperInterface::toUserDTO).toList();
-        return buildResponse(HttpStatus.OK, "OK", userDTOs);
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", userDTOs);
     }
 
     @Transactional
-    public  ResponseEntity<ApiResponse<Users>> insert(UserInsertDTO u){
-        Users newUser = new Users();
+    public ResponseEntity<ApiResponse<Users>> insert(UserInsertDTO u) {
+        if(!u.getUsertype().equals("Employee") &&  !u.getUsertype().equals("Visitor") ) {
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, "User type is not valid!", null);
 
+        }
+        if (usersRepository.existsUsersByEmail(u.getEmail())) {
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, "User email already registered", null);
+        }
+
+        Optional<Role> roleOpt = roleRepository.findById(u.getRole_id());
+        if (roleOpt.isEmpty()) {
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, "Role not found", null);
+        }
+
+        Optional<Company> companyOpt = companyRepository.findById(u.getCompany_id());
+        if (companyOpt.isEmpty()) {
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, "Company not found", null);
+        }
+
+        Users newUser = new Users();
         newUser.setUsertype(u.getUsertype());
         newUser.setName(u.getName());
-
-        if(usersRepository.existsUsersByEmail(u.getEmail()))
-            return buildResponse(HttpStatus.OK, "User email  already registered", null);
-
         newUser.setEmail(u.getEmail());
         newUser.setSurname(u.getSurname());
+        newUser.setRole(roleOpt.get());
+        newUser.setCompany(companyOpt.get());
 
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -109,44 +125,20 @@ public class UserService {
         LocalTime allowedExitTime = LocalTime.parse(u.getAllowed_exit_time(), timeFormatter);
         LocalDate expiryDate = LocalDate.parse(u.getExpiry(), dateFormatter);
 
-        Optional<Role> role = roleRepository.findById(u.getRole_id());
-        if(role.isEmpty()){
-            return buildResponse(HttpStatus.OK, "Role not found", null);
-        }
-        newUser.setRole(role.get());
-
-        Optional<Company> company = companyRepository.findById(u.getCompany_id());
-        if(company.isEmpty()){
-            return buildResponse(HttpStatus.OK, "Company not found", null);
-        }
-        newUser.setCompany(company.get());
-
-        String newRfid = UUID.randomUUID().toString();
-
         Badge newBadge = badgeRepository.save(new Badge(
-            null,
+                null,
                 allowedEnterTime,
                 allowedExitTime,
                 expiryDate,
-                newRfid
+                UUID.randomUUID().toString()
         ));
 
-
         newUser.setBadge(newBadge);
-        Users users = usersRepository.save(newUser);
 
-        return buildResponse(HttpStatus.OK, "OK", users);
+        Users savedUser = usersRepository.save(newUser);
 
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", savedUser);
     }
 
-    private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-        ApiResponse<T> response = new ApiResponse<>(
-                String.valueOf(status.value()),
-                message,
-                data,
-                new Date(),
-                null
-        );
-        return ResponseEntity.status(status).body(response);
-    }
+
 }

@@ -4,6 +4,7 @@ import it.tdgc.turnstile.dto.RoleDTO;
 import it.tdgc.turnstile.repository.RoleRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
+import it.tdgc.turnstile.util.responseBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,40 +34,40 @@ public class RoleService {
     public ResponseEntity<ApiResponse<List<RoleDTO>>> getAllRoles(){
         List<Role> r = roleRepository.findAll();
         if(r.isEmpty()){
-            return buildResponse(HttpStatus.OK, "No role available", null);
+            return responseBuilder.buildResponse(HttpStatus.OK, "No role available", null);
         }
         List<RoleDTO> roleDTOS = r.stream().map(mapperInterface::toRoleDTO).toList();
-        return buildResponse(HttpStatus.OK, "OK", roleDTOS);
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", roleDTOS);
     }
 
     @Transactional
     public ResponseEntity<ApiResponse<RoleDTO>> getRoleById(Integer id) {
         Optional<Role> role = roleRepository.findById(id);
         if (role.isEmpty()) {
-            return buildResponse(HttpStatus.NOT_FOUND, "Role ID not found", null);
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Role ID not found", null);
         }
 
         RoleDTO roleDTO = mapperInterface.toRoleDTO(role.get());
-        return buildResponse(HttpStatus.OK, "OK", roleDTO);
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", roleDTO);
     }
 
     @Transactional
     public ResponseEntity<ApiResponse<RoleDTO>> deleteRoleById(Integer id) {
         Optional<Role> role = roleRepository.findById(id);
         if (role.isEmpty()) {
-            return buildResponse(HttpStatus.NOT_FOUND, "Role ID not found", null);
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Role ID not found", null);
         }
         roleRepository.deleteById(id);
         RoleDTO roleDTO = mapperInterface.toRoleDTO(role.get());
 
-        return buildResponse(HttpStatus.OK, "Role successfully deleted", roleDTO);
+        return responseBuilder.buildResponse(HttpStatus.OK, "Role successfully deleted", roleDTO);
     }
 
     @Transactional
     public ResponseEntity<ApiResponse<RoleDTO>> updateRole(Role role) {
         Optional<Role> existingRole = roleRepository.findById(role.getId());
         if(existingRole.isEmpty()) {
-            return buildResponse(HttpStatus.NOT_FOUND, "Role ID not found", null);
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Role ID not found", null);
         }
         existingRole.get().setLevel(role.getLevel());
         existingRole.get().setDescription(role.getDescription());
@@ -74,26 +75,28 @@ public class RoleService {
         Role updatedRole = roleRepository.save(existingRole.get());
         RoleDTO roleDTO = mapperInterface.toRoleDTO(updatedRole);
 
-        return buildResponse(HttpStatus.OK, "Role updated successfully", roleDTO);
+        return responseBuilder.buildResponse(HttpStatus.OK, "Role updated successfully", roleDTO);
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<RoleDTO>> insertRole(Role role) {
-        Role savedRole = roleRepository.save(role);
+    public ResponseEntity<ApiResponse<RoleDTO>> insertRole(RoleDTO role) {
+        if(role.getDescription().isEmpty()){
+            return  responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Description is empty", null);
+        }
+        if(roleRepository.findByLevel(role.getLevel()).isPresent()){
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, "Level already exists", null);
+        }
+        if(roleRepository.findByDescription(role.getDescription()).isPresent()){
+            return  responseBuilder.buildResponse(HttpStatus.CONFLICT, "Description already exists", null);
+        }
+
+        Role newRole = new Role();
+
+        newRole.setLevel(role.getLevel());
+        newRole.setDescription(role.getDescription());
+        Role savedRole = roleRepository.save(newRole);
         RoleDTO roleDTO = mapperInterface.toRoleDTO(savedRole);
 
-        return buildResponse(HttpStatus.OK, "Role created successfully", roleDTO);
-    }
-
-    //TODO move into an interface
-    private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-        ApiResponse<T> response = new ApiResponse<>(
-                String.valueOf(status.value()),
-                message,
-                data,
-                new Date(),
-                null
-        );
-        return ResponseEntity.status(status).body(response);
+        return responseBuilder.buildResponse(HttpStatus.OK, "Role created successfully", roleDTO);
     }
 }

@@ -1,10 +1,13 @@
 package it.tdgc.turnstile.service;
 
+import it.tdgc.turnstile.dto.InsideOfficeDTO;
+import it.tdgc.turnstile.dto.InsideOfficeInsertDTO;
 import it.tdgc.turnstile.model.InsideOffice;
 import it.tdgc.turnstile.model.Users;
 import it.tdgc.turnstile.repository.InsideOfficeRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
+import it.tdgc.turnstile.util.responseBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +24,28 @@ public class InsideOfficeService {
     private final InsideOfficeRepository insideOfficeRepository;
     private final MapperInterface mapperInterface;
 
+
+
     public InsideOfficeService(InsideOfficeRepository insideOfficeRepository, MapperInterface mapperInterface) {
         this.insideOfficeRepository = insideOfficeRepository;
         this.mapperInterface = mapperInterface;
+    }
+
+    @Transactional
+    public ResponseEntity<ApiResponse<InsideOfficeDTO>> insertInsideOffice(InsideOfficeInsertDTO insideOffice) {
+        if(insideOffice.getUser_id() == null || insideOffice.getUser_id() <= 0) {
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "user_id cannot be null/equal or less then 0!", null);
+        }
+        if(insideOfficeRepository.findById(insideOffice.getUser_id()).isPresent()) {
+            return responseBuilder.buildResponse(HttpStatus.CONFLICT, "the user is already inside the office!", null);
+        }
+
+        InsideOffice io = new InsideOffice();
+        io.setUser(insideOfficeRepository.findByUserId(insideOffice.getUser_id()).getUser());
+
+        InsideOffice newIo = insideOfficeRepository.save(io);
+        InsideOfficeDTO insideOfficeDTO = mapperInterface.toInsideOfficeDTO(newIo);
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", insideOfficeDTO);
     }
 
     @Transactional
@@ -56,44 +78,5 @@ public class InsideOfficeService {
     }
 
 
-//    @Transactional
-//    public ResponseEntity<ApiResponse<InsideOfficeDTO>> getNumberOfUsersInsideOffice(){
-//        Integer numOfUsers = insideOfficeRepository.getTotNumOfUsers();
-//
-//        InsideOfficeDTO insideOfficeDTO = mapperInterface.toInsideOfficeDTONumOfUsers(numOfUsers);
-//
-//        return buildResponse(HttpStatus.OK, "OK", insideOfficeDTO);
-//    }
 
-//    @Transactional
-//    public Employee isEmployeeInsideOffice(Employee employee){
-//        Integer id = employee.getUser().getId();
-//        Optional<InsideOffice> IO = insideOfficeRepository.findByUserId(id);
-//        if(IO.isEmpty()){
-//            return null;
-//        }
-//        return employee;
-//    }
-//
-//
-//    @Transactional
-//    public Visitor isVisitorInsideOffice(Visitor visitor){
-//        Integer id = visitor.getUser().getId();
-//        Optional<InsideOffice> IO = insideOfficeRepository.findByUserId(id);
-//        if(IO.isEmpty()){
-//            return null;
-//        }
-//        return visitor;
-//    }
-
-    private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-        ApiResponse<T> response = new ApiResponse<>(
-                String.valueOf(status.value()),
-                message,
-                data,
-                new Date(),
-                null
-        );
-        return ResponseEntity.status(status).body(response);
-    }
 }

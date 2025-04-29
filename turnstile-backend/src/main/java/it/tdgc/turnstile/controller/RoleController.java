@@ -42,13 +42,13 @@ public class RoleController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse<RoleDTO>> updateRole(@RequestBody Role company) {
-        return roleService.updateRole(company);
+    public ResponseEntity<ApiResponse<RoleDTO>> updateRole(@RequestBody Role role) {
+        return roleService.updateRole(role);
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<ApiResponse<RoleDTO>> insertRole(@RequestBody Role company) {
-        return roleService.insertRole(company);
+    public ResponseEntity<ApiResponse<RoleDTO>> insertRole(@RequestBody RoleDTO role) {
+        return roleService.insertRole(role);
     }
 
 }

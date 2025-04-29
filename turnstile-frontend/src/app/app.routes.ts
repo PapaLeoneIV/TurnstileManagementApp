@@ -10,3 +10,11 @@ export const routes: Routes = [
     { path: 'add', component: AddPageComponent, canActivate: [canActivateAuthRole], data: { role: 'admin' } },
     { path: '**', redirectTo: "home-page" }
 ];
+
+
+
+/*
+fare un client lato backend 
+sistema di filtri dinamico
+espandere alcune tabelle del database
+*/

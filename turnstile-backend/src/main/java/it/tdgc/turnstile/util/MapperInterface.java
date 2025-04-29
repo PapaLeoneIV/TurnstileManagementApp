@@ -62,4 +62,15 @@ public interface MapperInterface {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "address", target = "address")
     Company toCompany(CompanyDTO companyDTO);
+
+
+    @Mapping(source="created_at", target="created_at")
+    @Mapping(source="error_message", target="error_message")
+    @Mapping(source="turnstile.id", target="turnstile_id")
+    @Mapping(source="user.id", target="user_id")
+    ErrorLogDTO toErrorLogDTO(ErrorLog errorLog);
+
+    @Mapping(source="id", target="id")
+    @Mapping(source="user", target="user")
+    InsideOfficeDTO toInsideOfficeDTO(InsideOffice newIo);
 }

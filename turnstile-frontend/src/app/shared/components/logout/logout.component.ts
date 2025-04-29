@@ -11,9 +11,6 @@ import { LogoutService } from '@app/core/service/logout.service';
 })
 export class LogoutComponent {
 
-    
-
-    // In your LogoutComponent
     constructor(private logoutService: LogoutService) {}
 
     logout() {

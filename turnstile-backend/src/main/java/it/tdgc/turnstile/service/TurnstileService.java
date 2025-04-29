@@ -1,10 +1,12 @@
 package it.tdgc.turnstile.service;
 
 import it.tdgc.turnstile.dto.TurnstileDTO;
+import it.tdgc.turnstile.dto.TurnstileInsertDTO;
 import it.tdgc.turnstile.model.Turnstile;
 import it.tdgc.turnstile.repository.TurnstileRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
+import it.tdgc.turnstile.util.responseBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +36,12 @@ public class TurnstileService {
     public ResponseEntity<ApiResponse<TurnstileDTO>> deleteTurnstileById(Integer id) {
         Optional<Turnstile> turnstile = turnstileRepository.findById(id);
         if (turnstile.isEmpty()) {
-            return buildResponse(HttpStatus.NOT_FOUND, "Turnstile ID not found", null);
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Turnstile ID not found", null);
         }
         turnstileRepository.deleteById(id);
         TurnstileDTO turnstileDTO = mapperInterface.toTurnstileDTO(turnstile.get());
 
-        return buildResponse(HttpStatus.OK, "Turnstile successfully deleted", turnstileDTO);
+        return responseBuilder.buildResponse(HttpStatus.OK, "Turnstile successfully deleted", turnstileDTO);
     }
 
     @Transactional
@@ -53,23 +55,15 @@ public class TurnstileService {
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<TurnstileDTO>> insertTurnstile(Turnstile turnstile) {
-        Turnstile savedTurnstile = turnstileRepository.save(turnstile);
+    public ResponseEntity<ApiResponse<TurnstileDTO>> insertTurnstile(TurnstileInsertDTO turnstile) {
+
+        Turnstile newTurnstile = new Turnstile();
+        newTurnstile.setAvailable(turnstile.isAvailable());
+
+        Turnstile savedTurnstile = turnstileRepository.save(newTurnstile);
         TurnstileDTO turnstileDTO = mapperInterface.toTurnstileDTO(savedTurnstile);
 
-        return buildResponse(HttpStatus.OK, "Turnstile created successfully", turnstileDTO);
-    }
-
-
-    private <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, String message, T data) {
-        ApiResponse<T> response = new ApiResponse<>(
-                String.valueOf(status.value()),
-                message,
-                data,
-                new Date(),
-                null
-        );
-        return ResponseEntity.status(status).body(response);
+        return responseBuilder.buildResponse(HttpStatus.OK, "Turnstile created successfully", turnstileDTO);
     }
 
 }

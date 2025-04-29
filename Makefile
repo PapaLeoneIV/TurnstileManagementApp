@@ -1,5 +1,5 @@
 keycloak: 
-	docker run -p 8081:8080 \
+	docker run -d -p 8081:8080 \
   	-e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
   	-e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
   	-e KC_HTTP_CORS_ORIGINS="http://localhost:4200" \
@@ -9,9 +9,18 @@ keycloak:
   	-v keycloak-data:/opt/keycloak/data \
   	quay.io/keycloak/keycloak:26.1.4 start-dev
 
+back:
+	cd turnstile-backend
+	mvn spring-boot:run
+	cd ..
 	
+front:
+	cd turnstile-frontend
+	ng serve
+
+
 docker-stop:
-	docker stop $(docker ps -a -q)
+	docker stop $(docker ps -aq)
 
 docker-rm:
 	docker rm $(docker ps -a -q)

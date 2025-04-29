@@ -22,7 +22,7 @@ import lombok.Setter;
 public class InsideOffice{
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "inside_office_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "inside_office_id_seq")
     @SequenceGenerator(name = "inside_office_id_seq", sequenceName = "inside_office_id_seq", allocationSize = 1)
     private Integer id;
 
