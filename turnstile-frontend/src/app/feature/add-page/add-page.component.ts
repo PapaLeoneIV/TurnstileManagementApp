@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '@app/shared/components/header/header.component';
 import { NAV_BUTTON_LIST } from '@app/shared/models/nav-button-list';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor } from '@angular/common';
 import { ModelListComponent } from '@app/shared/components/model-list/model-list.component';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DynamicFormService } from '@app/core/service/dynamic-form.service';

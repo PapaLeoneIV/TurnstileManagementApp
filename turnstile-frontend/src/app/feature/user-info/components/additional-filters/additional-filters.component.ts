@@ -70,8 +70,9 @@ export class AdditionalFiltersComponent implements OnInit, OnDestroy {
     }
 
     if (observable) {
-      observable.subscribe((response) => {
-        this.additionFilters = response;
+      observable.subscribe({
+        next: (response) => this.additionFilters = response,
+        error: (response) => console.error(response),
       });
     } else {
       this.additionFilters = [];

@@ -37,12 +37,16 @@ export class FilterListComponent {
       case queryFilters.BY_VISITOR:
         observable = this.dataService.getByVisitor();
         break;
+      
     }
 
     if (observable) {
-      observable.subscribe((response) => {
-        this.buttonFilterService.ee.emit(response.data.map(mapUserDTO));
-      });
+      observable.subscribe({
+        next: (response) =>  this.buttonFilterService.ee.emit(response.data.map(mapUserDTO)),
+        error: (response) => console.error(response),
+        complete: undefined,        
+      }
+      );
     }
 
     this.mainFilterService.ee.emit(filter);
