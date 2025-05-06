@@ -25,7 +25,7 @@ public class TurnstileController {
         this.mapperInterface = mapperInterface;
     }
 
-    @GetMapping("id/{id}")
+    @GetMapping("/search/id/{id}")
     public ResponseEntity<ApiResponse<TurnstileDTO>> getTurnstileWithId(@PathVariable Integer id){
         Turnstile t = turnstileService.getTurnstileWithId(id);
         TurnstileDTO tDTO = mapperInterface.toTurnstileDTO(t);

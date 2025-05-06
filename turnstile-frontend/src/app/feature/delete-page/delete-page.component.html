@@ -1,0 +1,35 @@
+<app-header></app-header>
+<app-nav-bar></app-nav-bar>
+
+<div class="container-fluid bg-light py-4">
+  <div class="row">
+    <div class="col-sm-12 col-lg-2 text-center w-full">
+      <app-model-list></app-model-list>
+
+    </div>
+    <div class="col-sm-12  col-lg-10 d-flex justify-content-center align-items-center flex-column">
+      <form class="w-100" style="max-width: 500px;" [formGroup]="form"
+        (ngSubmit)="submitSearchById()">
+        <div class="form-group text-center">
+          <label class="h3">Enter the ID you want to delete</label>
+          <input formControlName="id" class="form-control" type="text" placeholder="ID you want to delete...">
+        </div>
+        <div class="form-group text-center">
+          <button type="submit" class="btn btn-primary  mt-2 w-100">Search</button>
+        </div>
+      </form>
+    
+      <div class="text text-center py-4 text-2xl">
+        <h3 class="h3">This is the DB entry you want to remove with ID: <strong>{{formValue}}</strong></h3>
+      </div>
+    
+      <div class="w-100" style="max-width: 800px;">
+        <app-delete-table></app-delete-table>
+      </div>
+    
+      <button  (click)="submitDeleteById()" type="submit" class="btn btn-primary mt-2 w-100" style="max-width: 500px;">
+        Submit
+      </button>
+    </div>
+    </div>
+  </div>

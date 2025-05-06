@@ -1,9 +1,22 @@
-<ul class="flex flex-col h-full space-y-2">
-  @for (item of additionFilters; track $index) {
-    <li class="w-full">
-      <button (click)="applyFilter(item)" class="btn-filter w-full rounded-lg border-2 border-amber-400 bg-amber-100 hover:bg-amber-300 hover:shadow-md text-lg font-medium text-gray-800 px-4 py-2 ">
-        {{item}}
-      </button>
-    </li>
-  }
+<ul class="d-flex flex-column h-100 gap-2 list-unstyled">
+  <li *ngFor="let item of additionFilters; index as i">
+    <a 
+      (click)="applyFilter(item)"
+      [ngClass]="{
+        'active-nav-item': selectedItem === item,
+        'btn': true,
+        'mb-3': true,
+        'py-3': true,
+        'w-100': true,
+        'text-lg': true,
+        'border': true,
+        'border-info': true,
+        'bg-opacity-25': true,
+        'text-dark': true,
+        'fw-medium': true,
+        'rounded': true
+      }">
+      <span class="h5">{{ item }}</span>
+  </a>
+  </li>
 </ul>

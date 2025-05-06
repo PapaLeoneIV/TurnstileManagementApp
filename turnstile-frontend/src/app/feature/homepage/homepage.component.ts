@@ -1,22 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { HeaderComponent } from '@shared/components/header/header.component';
 import { NAV_BUTTON_LIST } from '@shared/models/nav-button-list';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { DoorManService } from '@core/service/doorman-service';
 import { ApiResponse } from '@shared/models/api-response';
 import { TransactionDTO } from '@core/dto/transaction-dto';
-import { NgStyle } from '@angular/common';
 import { Validators } from '@angular/forms';
 import { TransactionService } from '@core/service/transaction.service';
-import { RouterLink } from '@angular/router';
+import { NavBarComponent } from '@app/shared/components/nav-bar/nav-bar.component';
 @Component({
   selector: 'app-homepage',
-  imports: [HeaderComponent, ReactiveFormsModule, NgStyle, RouterLink],
+  imports: [HeaderComponent, ReactiveFormsModule, NavBarComponent],
   templateUrl: './homepage.component.html',
-  styleUrl: './homepage.component.css'
+  styleUrl: './homepage.component.css',
 })
 export class HomepageComponent implements OnInit {
-  protected readonly buttons = NAV_BUTTON_LIST;
 
   public msgStatus = "Waiting";
   public lastEntry = "N/A";

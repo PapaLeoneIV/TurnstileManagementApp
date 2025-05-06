@@ -1,0 +1,36 @@
+<div class="table-responsive">
+  <table class="table table-sm table-bordered table-striped table-hover align-middle text-center">
+    <thead class="table-primary">
+      <tr>
+        <th style="white-space: nowrap;" scope="col">User Type</th>
+        <th style="white-space: nowrap;" scope="col">Name</th>
+        <th style="white-space: nowrap;" scope="col">Surname</th>
+        <th style="white-space: nowrap;" scope="col">Email</th>
+        <th style="white-space: nowrap;" scope="col">Role Level</th>
+        <th style="white-space: nowrap;" scope="col">Role</th>
+        <th style="white-space: nowrap;" scope="col">Company Name</th>
+        <th style="white-space: nowrap;" scope="col">Company Address</th>
+        <th style="white-space: nowrap;" scope="col">Enter Time</th>
+        <th style="white-space: nowrap;" scope="col">Exit Time</th>
+        <th style="white-space: nowrap;" scope="col">Badge Expiry</th>
+        <th style="white-space: nowrap;" scope="col">Badge RFID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let userDTO of userDTOArray">
+        <td>{{ userDTO.usertype }}</td>
+        <td>{{ userDTO.name }}</td>
+        <td>{{ userDTO.surname }}</td>
+        <td class="text-truncate" style="max-width: 100px;">{{ userDTO.email }}</td>
+        <td class="text-truncate" style="max-width: 1px;">{{ userDTO.role.level }}</td>
+        <td>{{ userDTO.role.description }}</td>
+        <td>{{ userDTO.company.name }}</td>
+        <td class="text-truncate" style="max-width: 100px;">{{ userDTO.company.address }}</td>
+        <td>{{ userDTO.badge.allowed_enter_time }}</td>
+        <td>{{ userDTO.badge.allowed_exit_time }}</td>
+        <td>{{ userDTO.badge.expiry }}</td>
+        <td class="text-truncate" style="max-width: 40px;">{{ userDTO.badge.rfid }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

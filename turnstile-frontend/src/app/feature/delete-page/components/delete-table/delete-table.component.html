@@ -1,0 +1,14 @@
+<div *ngIf="DTO" class="table-responsive">
+  <table class="table table-sm table-bordered table-striped table-hover align-middle text-center">
+    <thead class="table-primary">
+      <tr>
+        <th *ngFor="let key of objectKeys(DTO)">{{ key }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td *ngFor="let key of objectKeys(DTO)">{{ DTO[key] }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

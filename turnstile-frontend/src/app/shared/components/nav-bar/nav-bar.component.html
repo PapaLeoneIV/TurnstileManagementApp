@@ -1,0 +1,16 @@
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-0">
+    <div class="container-fluid p-2">
+      <ul class="navbar-nav w-100 d-flex gap-2">
+        <li class="nav-item flex-fill text-center "
+        routerLinkActive="active-nav-item"
+        [routerLinkActiveOptions]="{ exact: true }"
+        *ngFor="let item of buttons; index as i">
+          <a  [routerLink]="item.route"
+              class="btn btn-link nav-link text-black w-100 h-100 d-block border border-2">
+            {{ item.name }}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>

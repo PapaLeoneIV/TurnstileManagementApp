@@ -1,7 +1,9 @@
 package it.tdgc.turnstile.service;
 
 import it.tdgc.turnstile.dto.RoleDTO;
+import it.tdgc.turnstile.model.Users;
 import it.tdgc.turnstile.repository.RoleRepository;
+import it.tdgc.turnstile.repository.UsersRepository;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
 import it.tdgc.turnstile.util.responseBuilder;
@@ -19,14 +21,16 @@ import java.util.Optional;
 public class RoleService {
     private final RoleRepository roleRepository;
     private final MapperInterface mapperInterface;
+    private final UsersRepository usersRepository;
 
 
     //TODO finish to implement controller and postman tests
 
 
-    public RoleService(RoleRepository roleRepository, MapperInterface mapperInterface) {
+    public RoleService(RoleRepository roleRepository, MapperInterface mapperInterface, UsersRepository usersRepository) {
         this.roleRepository = roleRepository;
         this.mapperInterface = mapperInterface;
+        this.usersRepository = usersRepository;
     }
 
 
@@ -53,14 +57,43 @@ public class RoleService {
 
     @Transactional
     public ResponseEntity<ApiResponse<RoleDTO>> deleteRoleById(Integer id) {
+        if(id == null || id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
         Optional<Role> role = roleRepository.findById(id);
         if (role.isEmpty()) {
             return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Role ID not found", null);
         }
-        roleRepository.deleteById(id);
-        RoleDTO roleDTO = mapperInterface.toRoleDTO(role.get());
+        List<Users> users = usersRepository.findUsersByRoleId(id);
+        if(users.isEmpty()){
+            roleRepository.deleteById(id);
 
-        return responseBuilder.buildResponse(HttpStatus.OK, "Role successfully deleted", roleDTO);
+            return responseBuilder.buildResponse(HttpStatus.OK, "Role successfully deleted", mapperInterface.toRoleDTO(role.get()));
+        }
+        Optional<Role> newRole = Optional.empty();
+
+        if (id > 1 && roleRepository.findById(id - 1).isPresent()) {
+            newRole = roleRepository.findById(id - 1);
+        } else if (id == 1 && roleRepository.findById(id + 1).isPresent()) {
+            newRole = roleRepository.findById(id + 1);
+        } else {
+            return responseBuilder.buildResponse(
+                    HttpStatus.BAD_REQUEST,
+                    "ID cannot be lower than 0 or no fallback role available!",
+                    null
+            );
+        }
+
+        if (newRole.isEmpty()) {
+            return responseBuilder.buildResponse(
+                    HttpStatus.NOT_FOUND,
+                    "Cannot assign a new role to related user",
+                    null
+            );
+        }
+        usersRepository.updateUserRole(newRole.get(), id);
+        return responseBuilder.buildResponse(HttpStatus.OK, "Role successfully deleted", mapperInterface.toRoleDTO(role.get()));
+
     }
 
     @Transactional

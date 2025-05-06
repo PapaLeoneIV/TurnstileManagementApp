@@ -1,5 +1,6 @@
 package it.tdgc.turnstile.service;
 
+import it.tdgc.turnstile.dto.TransactionDTO;
 import it.tdgc.turnstile.dto.TransactionEventDTO;
 import it.tdgc.turnstile.dto.TransactionEventInsertDTO;
 import it.tdgc.turnstile.model.Transaction;
@@ -75,5 +76,35 @@ public class TransactionEventService {
         TransactionEvent savedTransactionEvent = transactionEventRepository.save(newTe);
         TransactionEventDTO teDTO = mapperInterface.toTransactionEventDTO(savedTransactionEvent);
         return responseBuilder.buildResponse(HttpStatus.OK,"OK", teDTO);
+    }
+
+    public ResponseEntity<ApiResponse<TransactionEventDTO>> searchById(Integer id) {
+        if(id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<Transaction> t = transactionRepository.findById(id);
+        if(t.isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "The ID is not present in the DB!", null);
+        }
+        Optional<TransactionEvent> te = transactionEventRepository.findById(id);
+        if(te.isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "The ID is not present in the DB!", null);
+        }
+        TransactionEventDTO teDTO = mapperInterface.toTransactionEventDTO(te.get());
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", teDTO);
+    }
+
+    public ResponseEntity<ApiResponse<TransactionEventDTO>> deleteTransactionEventById(Integer id) {
+        if(id < 0 || id == null){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<TransactionEvent> t = transactionEventRepository.findById(id);
+        if (t .isEmpty()) {
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "TransactionEvent ID not found", null);
+        }
+        transactionRepository.deleteById(id);
+        TransactionEventDTO tDTO = mapperInterface.toTransactionEventDTO(t .get());
+
+        return responseBuilder.buildResponse(HttpStatus.OK, "TransactionEvent successfully deleted", tDTO);
     }
 }

@@ -31,7 +31,7 @@ public class CompanyController {
         return companyService.getAllCompanies();
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/search/id/{id}")
     public ResponseEntity<ApiResponse<CompanyDTO>> getCompanyById(@PathVariable("id") Integer id) {
         return companyService.getCompanyById(id);
     }

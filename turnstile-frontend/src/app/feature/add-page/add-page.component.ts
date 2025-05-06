@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '@app/shared/components/header/header.component';
-import { NAV_BUTTON_LIST } from '@app/shared/models/nav-button-list';
-import { NgClass, NgFor } from '@angular/common';
-import { ModelListComponent } from '@app/shared/components/model-list/model-list.component';
+import { NgFor } from '@angular/common';
+import { ModelListComponent } from '@app/shared/model-list/model-list.component';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DynamicFormService } from '@app/core/service/dynamic-form.service';
 import { ModelDTOService } from '@app/core/service/model-dto.service';
@@ -20,15 +18,14 @@ import { InsideOfficeInsertDTO } from '@app/core/dto/add/inside-office-insert.dt
 import { RoleInsertDTO } from '@app/core/dto/add/role-insert-dto';
 import { TurnstileInsertDTO } from '@app/core/dto/add/turnstile-insert.dto';
 import { TransactionInsertDTO } from '@app/core/dto/add/transaction-insert.dto';
+import { NavBarComponent } from '@app/shared/components/nav-bar/nav-bar.component';
 @Component({
   selector: 'app-add-page',
-  imports: [HeaderComponent, ModelListComponent, RouterLink, NgClass, ReactiveFormsModule, NgFor, CommonModule],
+  imports: [HeaderComponent, ModelListComponent, ReactiveFormsModule, NgFor, CommonModule, NavBarComponent],
   templateUrl: './add-page.component.html',
   styleUrl: './add-page.component.css'
 })
 export class AddPageComponent implements OnInit {
-  buttons = NAV_BUTTON_LIST;
-  isOpen = false;
   form!: FormGroup;
   dto: RoleInsertDTO | UserInsertDTO | CompanyDTO | BadgeDTO | TransactionInsertDTO | TurnstileInsertDTO | InsideOfficeInsertDTO | TransactionEvent | ErrorLog;
 
@@ -41,16 +38,10 @@ export class AddPageComponent implements OnInit {
   ngOnInit() {
     this.form = new FormGroup({});
     this.mdtos.ee.subscribe((dto) => {
-      this.dto = this.mdtos.getDTO(dto.toUpperCase());
+      this.dto = this.mdtos.getInsertDTO(dto.toUpperCase());
       this.form = this.formService.generateForm(this.dto);
     });
   }
-
-  toggleSidebar() {
-    this.isOpen = !this.isOpen;
-  }
-
-
 
   submitForm() {
     const handlers = new Map<Function, () => Observable<ApiResponse<any>>>([

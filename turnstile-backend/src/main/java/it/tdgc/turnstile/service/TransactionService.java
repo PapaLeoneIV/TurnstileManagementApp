@@ -1,10 +1,10 @@
 package it.tdgc.turnstile.service;
 
+import it.tdgc.turnstile.dto.InsideOfficeDTO;
+import it.tdgc.turnstile.dto.RoleDTO;
 import it.tdgc.turnstile.dto.TransactionDTO;
 import it.tdgc.turnstile.dto.TransactionInsertDTO;
-import it.tdgc.turnstile.model.Transaction;
-import it.tdgc.turnstile.model.Turnstile;
-import it.tdgc.turnstile.model.Users;
+import it.tdgc.turnstile.model.*;
 import it.tdgc.turnstile.repository.TransactionRepository;
 import it.tdgc.turnstile.repository.TurnstileRepository;
 import it.tdgc.turnstile.repository.UsersRepository;
@@ -191,4 +191,29 @@ public class TransactionService {
    }
 
 
+    public ResponseEntity<ApiResponse<TransactionDTO>> searchById(Integer id) {
+        if(id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<Transaction> t = transactionRepository.findById(id);
+        if(t.isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "The ID is not present in the DB!", null);
+        }
+        TransactionDTO IODTO = mapperInterface.toTransactionDto(t.get());
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", IODTO);
+    }
+
+    public ResponseEntity<ApiResponse<TransactionDTO>> deleteTransactionById(Integer id) {
+        if(id < 0 || id == null){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<Transaction> t = transactionRepository.findById(id);
+        if (t .isEmpty()) {
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Transaction ID not found", null);
+        }
+        transactionRepository.deleteById(id);
+        TransactionDTO tDTO = mapperInterface.toTransactionDto(t .get());
+
+        return responseBuilder.buildResponse(HttpStatus.OK, "Transaction successfully deleted", tDTO);
+    }
 }

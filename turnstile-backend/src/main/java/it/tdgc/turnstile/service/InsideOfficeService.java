@@ -2,7 +2,9 @@ package it.tdgc.turnstile.service;
 
 import it.tdgc.turnstile.dto.InsideOfficeDTO;
 import it.tdgc.turnstile.dto.InsideOfficeInsertDTO;
+import it.tdgc.turnstile.dto.TurnstileDTO;
 import it.tdgc.turnstile.model.InsideOffice;
+import it.tdgc.turnstile.model.Turnstile;
 import it.tdgc.turnstile.model.Users;
 import it.tdgc.turnstile.repository.InsideOfficeRepository;
 import it.tdgc.turnstile.util.ApiResponse;
@@ -33,7 +35,7 @@ public class InsideOfficeService {
 
     @Transactional
     public ResponseEntity<ApiResponse<InsideOfficeDTO>> insertInsideOffice(InsideOfficeInsertDTO insideOffice) {
-        if(insideOffice.getUser_id() == null || insideOffice.getUser_id() <= 0) {
+        if(insideOffice.getUser_id() == null || insideOffice.getUser_id() < 0) {
             return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "user_id cannot be null/equal or less then 0!", null);
         }
         if(insideOfficeRepository.findById(insideOffice.getUser_id()).isPresent()) {
@@ -41,8 +43,7 @@ public class InsideOfficeService {
         }
 
         InsideOffice io = new InsideOffice();
-        io.setUser(insideOfficeRepository.findByUserId(insideOffice.getUser_id()).getUser());
-
+        io.setUser(io.getUser());
         InsideOffice newIo = insideOfficeRepository.save(io);
         InsideOfficeDTO insideOfficeDTO = mapperInterface.toInsideOfficeDTO(newIo);
         return responseBuilder.buildResponse(HttpStatus.OK, "OK", insideOfficeDTO);
@@ -50,8 +51,9 @@ public class InsideOfficeService {
 
     @Transactional
     public boolean isInsideOffice(Integer id){
-        InsideOffice IO = insideOfficeRepository.findByUserId(id);
-        return IO != null;
+        Optional<InsideOffice> IO = insideOfficeRepository.findByUserId(id);
+
+        return IO.isPresent();
     }
 
     @Transactional
@@ -60,7 +62,8 @@ public class InsideOfficeService {
     }
     @Transactional
     public void removeUser(Users user){
-        insideOfficeRepository.delete(insideOfficeRepository.findByUserId(user.getId()));
+        Optional<InsideOffice> u = insideOfficeRepository.findByUserId(user.getId());
+        u.ifPresent(users -> insideOfficeRepository.deleteById(users.getId()));
     }
 
 
@@ -78,5 +81,29 @@ public class InsideOfficeService {
     }
 
 
+    public ResponseEntity<ApiResponse<InsideOfficeDTO>> searchById(Integer id) {
+        if(id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<InsideOffice> IO = insideOfficeRepository.findById(id);
+        if(IO.isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "The ID is not present in the DB!", null);
+        }
+        InsideOfficeDTO IODTO = mapperInterface.toInsideOfficeDTO(IO.get());
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", IODTO);
+    }
 
+    public ResponseEntity<ApiResponse<InsideOfficeDTO>> deleteById(Integer id) {
+        if(id == null || id <= 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<InsideOffice> io = insideOfficeRepository.findById(id);
+        if (io.isEmpty()) {
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "InsideOffice ID not found", null);
+        }
+        insideOfficeRepository.deleteById(id);
+        InsideOfficeDTO turnstileDTO = mapperInterface.toInsideOfficeDTO(io.get());
+
+        return responseBuilder.buildResponse(HttpStatus.OK, "InsideOffice successfully deleted", turnstileDTO);
+    }
 }

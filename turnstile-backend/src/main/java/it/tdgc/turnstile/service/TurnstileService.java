@@ -34,6 +34,9 @@ public class TurnstileService {
 
     @Transactional
     public ResponseEntity<ApiResponse<TurnstileDTO>> deleteTurnstileById(Integer id) {
+        if(id == null || id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
         Optional<Turnstile> turnstile = turnstileRepository.findById(id);
         if (turnstile.isEmpty()) {
             return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Turnstile ID not found", null);

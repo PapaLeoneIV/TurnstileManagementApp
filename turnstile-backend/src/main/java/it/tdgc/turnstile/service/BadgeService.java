@@ -37,15 +37,18 @@ public class BadgeService {
 
     @Transactional
     public ResponseEntity<ApiResponse<BadgeDTO>> getBadgeById(Integer id) {
+        if (id == null || id < 0) {
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be null or lower then 0!", null);
+        }
         Optional<Badge> badge = badgeRepository.findById(id);
+
         if (badge.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse<>("404", "Badge ID not found", null, new Date(), null));
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND,"The badge with the given id was not found!", null);
         }
 
         BadgeDTO badgeDTO = mapperInterface.toBadgeDTO(badge.get());
 
-        return ResponseEntity.ok(new ApiResponse<>("200", "Badge found", badgeDTO, new Date(), null));
+        return responseBuilder.buildResponse(HttpStatus.OK, "Badge successfully deleted", badgeDTO);
     }
 
     @Transactional
@@ -105,8 +108,7 @@ public class BadgeService {
 
         BadgeDTO badgeDTO = mapperInterface.toBadgeDTO(badgeToUpdate.get());
 
-
-        return ResponseEntity.ok(new ApiResponse<>("204", "Badge updated successfully", badgeDTO, new Date(), null));
+        return responseBuilder.buildResponse(HttpStatus.OK, "Badge updated successfully", badgeDTO);
     }
 
     @Transactional
