@@ -8,9 +8,10 @@ import { TransactionDTO } from '@core/dto/transaction-dto';
 import { Validators } from '@angular/forms';
 import { TransactionService } from '@core/service/transaction.service';
 import { NavBarComponent } from '@app/shared/components/nav-bar/nav-bar.component';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-homepage',
-  imports: [HeaderComponent, ReactiveFormsModule, NavBarComponent],
+  imports: [HeaderComponent, ReactiveFormsModule, NavBarComponent, DatePipe],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.css',
 })
