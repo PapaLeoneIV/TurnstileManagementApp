@@ -1,70 +1,62 @@
-<app-header />
-<ul class="w-full flex flex-row justify-evenly space-x-4">
-  @for (item of buttons; track $index) {
-  <button [routerLink]="item.route"
-    class="bg-amber-100 p-4 w-full max-w-xs border-2 border-black rounded-lg hover:bg-amber-300">
-    {{ item.name }}
-  </button>
-  }
-</ul>
 
-<!-- extern div -->
-<div class="w-full max-h-11/12 flex flex-col items-center">
 
-  <!--    intern div   -->
-  <div class="w-3/6 mx-auto">
+<app-header></app-header>
+<app-nav-bar></app-nav-bar>
 
-    <!--    header   -->
-    <div class="w-full mt-6 text-left bg-amber-100 px-5 py-4">
-      <h1 class="font-extrabold text-2xl">Turnstile Management</h1>
-      <p class="font-bold">Control access and monitor turnstile activity</p>
+<div class="container py-3">
+
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12 bg-info bg-opacity-25 p-4 text-center">
+      <h1 class="fw-bold h1">Turnstile Management App</h1>
+      <p class="fw-bold h3">Control access and monitor turnstile activity</p>
     </div>
+  </div>
 
-    <!--    forms and info section   -->
-    <div class="w-full mt-1 text-left bg-white px-5 py-6">
-      <div class="flex flex-row gap-6">
-        <!-- Forms section -->
-        <div class="w-1/2">
-            <form [formGroup]="checkoutForm" class="flex flex-col justify-between space-y-8">
-            <div class="flex flex-col">
-              <span>Insert your Badge</span>
-              <input formControlName="badgeId" type="text" [placeholder]="'Your Badge ID'"
-                class="p-2 border border-gray-300 rounded" />
-            </div>
-            <div class="flex flex-col">
-              <span>Choose the turnstile you want to use</span>
-              <input formControlName="turnstileId" type="text"  [placeholder]="'Choose Turnstile ID'" class="p-2 border border-gray-300 rounded" />
-            </div>
-            <!--    buttons   -->
-              <div class="w-full flex justify-between gap-2">
-                <button [ngStyle]="{ 'cursor': !checkoutForm.valid ? 'not-allowed' : 'pointer' }"
-                        [disabled]="!checkoutForm.valid"
-                        (click)="onSubmit('enter')"
-                        class="w-full bg-amber-100 border border-black p-2">
-                  Enter
-                </button>
-                <button [ngStyle]="{ 'cursor': !checkoutForm.valid ? 'not-allowed' : 'pointer' }"
-                        [disabled]="!checkoutForm.valid"
-                        (click)="onSubmit('exit')"
-                        class="w-full bg-amber-100 border border-black p-2">
-                  Exit
-                </button>
-              </div>
-          </form>
-        </div>
-
-        <!-- Information section -->
-        <div class="w-1/2 bg-gray-50 p-4 rounded">
-          <h3 class="font-bold mb-2">Information</h3>
-          <div class="space-y-2">
-            <p><span class="font-semibold">Last entry:</span> {{lastEntry}}</p>
-            <p><span class="font-semibold">Status:</span> {{msgStatus}}</p>
+  <!-- Main Content -->
+  <div class="row h-100">
+    
+    <!-- Form Section -->
+    <div class="col-12 col-md-6">
+      <div class="bg-white border p-4 rounded h-100 d-flex flex-column justify-content-center">
+        <form [formGroup]="checkoutForm">
+          
+          <div class="mb-3">
+            <label class="form-label">Insert your Badge</label>
+            <input formControlName="badgeId" type="text" class="form-control" placeholder="Your Badge ID" />
           </div>
-        </div>
+
+          <div class="mb-3">
+            <label class="form-label">Choose the turnstile you want to use</label>
+            <input formControlName="turnstileId" type="text" class="form-control" placeholder="Turnstile ID" />
+          </div>
+
+          <div class="d-flex justify-content-between gap-2">
+            <button [disabled]="!checkoutForm.valid" (click)="onSubmit('enter')" 
+                    class="btn btn-info btn-lg w-100">
+              Enter
+            </button>
+            <button [disabled]="!checkoutForm.valid" (click)="onSubmit('exit')" 
+                    class="btn btn-info btn-lg w-100">
+              Exit
+            </button>
+          </div>
+
+        </form>
       </div>
     </div>
 
-
+    <!-- Info Section -->
+    <div class="col-12 col-md-6 ">
+      <div class="bg-white p-4 rounded h-100 d-flex flex-column justify-content-center">
+        <p class="text-center mb-3">
+          Last Time someone entered: <strong>{{lastEntry }} </strong>
+        </p>
+        <p class="text-center">
+          Transaction message: <strong>{{msgStatus}}</strong>
+        </p>
+      </div>
+    </div>
 
   </div>
 </div>

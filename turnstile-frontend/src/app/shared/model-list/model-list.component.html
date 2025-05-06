@@ -1,0 +1,10 @@
+<ul class="d-flex flex-column  gap-2 list-unstyled">
+  <li *ngFor="let item of models; index as i">
+    <a
+      (click)="updateData(item)"
+      class="btn mb-3 py-3 w-100 text-lg border border-info bg-opacity-25 text-dark fw-medium rounded"
+      [ngClass]="{'active-nav-item': selectedItem === item}">
+      {{ item }}
+    </a>
+  </li>
+</ul>

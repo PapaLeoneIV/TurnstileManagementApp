@@ -1,7 +1,9 @@
 package it.tdgc.turnstile.service;
 
 import it.tdgc.turnstile.dto.ErrorLogDTO;
+import it.tdgc.turnstile.dto.TransactionEventDTO;
 import it.tdgc.turnstile.model.ErrorLog;
+import it.tdgc.turnstile.model.TransactionEvent;
 import it.tdgc.turnstile.model.Users;
 import it.tdgc.turnstile.repository.ErrorLogRepository;
 import it.tdgc.turnstile.repository.UsersRepository;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class ErrorLogService {
@@ -72,6 +75,32 @@ public class ErrorLogService {
         ErrorLogDTO elDTO = mapperInterface.toErrorLogDTO(saved);
 
         return responseBuilder.buildResponse(HttpStatus.OK, "OK", elDTO);
+    }
+
+    public ResponseEntity<ApiResponse<ErrorLogDTO>> searchById(Integer id) {
+    if(id < 0){
+        return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+    }
+    Optional<ErrorLog> el = errorLogRepository.findById(id);
+    if(el.isEmpty()){
+        return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Not found!", null);
+    }
+    ErrorLogDTO elDTO = mapperInterface.toErrorLogDTO(el.get());
+    return responseBuilder.buildResponse(HttpStatus.OK, "OK", elDTO);
+    }
+
+    public ResponseEntity<ApiResponse<ErrorLogDTO>> deleteErrorLogById(Integer id) {
+        if(id == null || id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<ErrorLog> el = errorLogRepository.findById(id);
+        if (el .isEmpty()) {
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "ErrorLog ID not found", null);
+        }
+        errorLogRepository.deleteById(id);
+        ErrorLogDTO tDTO = mapperInterface.toErrorLogDTO(el .get());
+
+        return responseBuilder.buildResponse(HttpStatus.OK, "ErrorLog successfully deleted", tDTO);
     }
 }
 

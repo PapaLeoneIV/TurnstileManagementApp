@@ -1,20 +1,11 @@
 package it.tdgc.turnstile.service;
 
 import it.tdgc.turnstile.dto.*;
-import it.tdgc.turnstile.model.Badge;
-import it.tdgc.turnstile.model.Company;
-import it.tdgc.turnstile.model.Role;
-import it.tdgc.turnstile.model.Users;
-import it.tdgc.turnstile.repository.BadgeRepository;
-import it.tdgc.turnstile.repository.CompanyRepository;
-import it.tdgc.turnstile.repository.RoleRepository;
-import it.tdgc.turnstile.repository.UsersRepository;
+import it.tdgc.turnstile.model.*;
+import it.tdgc.turnstile.repository.*;
 import it.tdgc.turnstile.util.ApiResponse;
 import it.tdgc.turnstile.util.MapperInterface;
 import it.tdgc.turnstile.util.responseBuilder;
-import org.apache.catalina.User;
-import org.apache.coyote.Response;
-import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -37,14 +26,16 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final CompanyRepository companyRepository;
     private final BadgeRepository badgeRepository;
+    private final InsideOfficeRepository insideOfficeRepository;
 
     @Autowired
-    public UserService(UsersRepository usersRepository, MapperInterface mapperInterface, RoleRepository roleRepository, CompanyRepository companyRepository, BadgeRepository badgeRepository) {
+    public UserService(UsersRepository usersRepository, MapperInterface mapperInterface, RoleRepository roleRepository, CompanyRepository companyRepository, BadgeRepository badgeRepository, InsideOfficeRepository insideOfficeRepository) {
         this.usersRepository = usersRepository;
         this.mapperInterface = mapperInterface;
         this.roleRepository = roleRepository;
         this.companyRepository = companyRepository;
         this.badgeRepository = badgeRepository;
+        this.insideOfficeRepository = insideOfficeRepository;
     }
 
 
@@ -141,4 +132,32 @@ public class UserService {
     }
 
 
+    public ResponseEntity<ApiResponse<UserDTO>> getUserById(Integer id) {
+        if(id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Bad Request, id cannot be negative!", null);
+        }
+        Optional<Users> user = usersRepository.findById(id);
+        if(user.isEmpty()){
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "User not found!", null);
+        }
+        Users userObj = user.get();
+        UserDTO userDTO = mapperInterface.toUserDTO(userObj);
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", userDTO);
+    }
+
+    public ResponseEntity<ApiResponse<UserDTO>> deleteUserById(Integer id) {
+        if(id == null || id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "ID cannot be lower than 0!", null);
+        }
+        Optional<Users> u = usersRepository.findById(id);
+        if (u.isEmpty()) {
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "User ID not found", null);
+        }
+        Optional<InsideOffice> io = insideOfficeRepository.findByUserId(id);
+        io.ifPresent(IO -> insideOfficeRepository.deleteById(IO.getUser().getId()));
+        usersRepository.deleteById(id);
+        UserDTO userDTO = mapperInterface.toUserDTO(u.get());
+
+        return responseBuilder.buildResponse(HttpStatus.OK, "User successfully deleted", userDTO);
+    }
 }

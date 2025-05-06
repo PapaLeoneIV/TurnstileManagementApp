@@ -26,6 +26,16 @@ public class InsideOfficeController {
         this.insideOfficeService = insideOfficeService;
     }
 
+    @GetMapping("/search/id/{id}")
+    public ResponseEntity<ApiResponse<InsideOfficeDTO>> searchInsideOfficeById(@PathVariable("id") Integer id) {
+        return insideOfficeService.searchById(id);
+    }
+
+    @GetMapping("/delete/id/{id}")
+    public ResponseEntity<ApiResponse<InsideOfficeDTO>> deleteInsideOfficeById(@PathVariable("id") Integer id) {
+        return insideOfficeService.deleteById(id);
+    }
+
     @PostMapping("/insert")
     public ResponseEntity<ApiResponse<InsideOfficeDTO>> insertBadge(@RequestBody InsideOfficeInsertDTO io) throws BadgeAlreadyExistsException {
         return insideOfficeService.insertInsideOffice(io);

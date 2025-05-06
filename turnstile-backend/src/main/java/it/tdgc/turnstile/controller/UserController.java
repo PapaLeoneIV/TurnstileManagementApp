@@ -1,6 +1,8 @@
 package it.tdgc.turnstile.controller;
 
 
+import it.tdgc.turnstile.dto.TurnstileDTO;
+import it.tdgc.turnstile.dto.UserDTO;
 import it.tdgc.turnstile.dto.UserInsertDTO;
 import it.tdgc.turnstile.model.Users;
 import it.tdgc.turnstile.service.UserService;
@@ -25,5 +27,15 @@ import org.springframework.web.bind.annotation.*;
     @PostMapping("/insert")
     public ResponseEntity<ApiResponse<Users>> insertUser(@RequestBody @NotNull UserInsertDTO userInsertDTO) {
          return userService.insert(userInsertDTO);
+    }
+
+    @GetMapping("/search/id/{id}")
+    public ResponseEntity<ApiResponse<UserDTO>> searchUserById(@PathVariable("id") Integer id) {
+         return userService.getUserById(id);
+    }
+
+    @DeleteMapping("/delete/id/{id}")
+    public ResponseEntity<ApiResponse<UserDTO>> deleteUserById(@PathVariable Integer id) {
+        return userService.deleteUserById(id);
     }
  }

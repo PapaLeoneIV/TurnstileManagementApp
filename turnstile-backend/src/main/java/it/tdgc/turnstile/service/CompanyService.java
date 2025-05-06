@@ -53,15 +53,17 @@ public class CompanyService {
 
     @Transactional
     public ResponseEntity<ApiResponse<CompanyDTO>> deleteCompanyById(Integer id) {
+        if(id == null || id < 0){
+            return responseBuilder.buildResponse(HttpStatus.BAD_REQUEST, "Bad Request", null);
+        }
         Optional<Company> company = companyRepository.findById(id);
         if (company.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse<>("404", "Company ID not found", null, new Date(), null));
+            return responseBuilder.buildResponse(HttpStatus.NOT_FOUND, "Company ID not found", null);
         }
         companyRepository.deleteById(id);
         CompanyDTO companyDTO = mapperInterface.toCompanyDTO(company.get());
 
-        return ResponseEntity.ok(new ApiResponse<>("200", "Company successfully deleted", companyDTO, new Date(), null));
+        return responseBuilder.buildResponse(HttpStatus.OK, "OK", companyDTO);
     }
 
     @Transactional

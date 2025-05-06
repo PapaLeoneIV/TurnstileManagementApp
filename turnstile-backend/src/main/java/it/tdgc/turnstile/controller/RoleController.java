@@ -31,13 +31,13 @@ public class RoleController {
 
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/search/id/{id}")
     public ResponseEntity<ApiResponse<RoleDTO>> getRoleById(@PathVariable("id") Integer id) {
         return roleService.getRoleById(id);
     }
 
     @DeleteMapping("/delete/id/{id}")
-    public ResponseEntity<ApiResponse<RoleDTO>> deleteRoleById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<RoleDTO>> deleteRoleById(@PathVariable("id")  Integer id) {
         return roleService.deleteRoleById(id);
     }
 

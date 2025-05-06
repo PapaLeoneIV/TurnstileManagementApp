@@ -1,6 +1,7 @@
 package it.tdgc.turnstile.controller;
 
 
+import it.tdgc.turnstile.dto.TransactionDTO;
 import it.tdgc.turnstile.dto.TransactionEventDTO;
 import it.tdgc.turnstile.dto.TransactionEventInsertDTO;
 import it.tdgc.turnstile.model.TransactionEvent;
@@ -25,8 +26,11 @@ public class TransactionEventController {
         this.transactionEventService = transactionEventService;
         this.mapperInterface = mapperInterface;
     }
-
-    @GetMapping
+    @GetMapping("/search/id/{id}")
+    public ResponseEntity<ApiResponse<TransactionEventDTO>> searchTransactionById(@PathVariable("id") Integer id) {
+        return transactionEventService.searchById(id);
+    }
+    @GetMapping("search/last")
     public ResponseEntity<ApiResponse<TransactionEventDTO>> getLastTransactionEvent(@RequestParam Integer id) {
         TransactionEvent t = transactionEventService.getLastTransactionEvent(id);
         TransactionEventDTO tDTO = mapperInterface.toTransactionEventDTO(t);
@@ -38,5 +42,8 @@ public class TransactionEventController {
         return transactionEventService.insertTransactionEvent(te);
     }
 
-
+    @DeleteMapping("/delete/id/{id}")
+    public ResponseEntity<ApiResponse<TransactionEventDTO>> deleteTransactionEventById(@PathVariable Integer id) {
+        return transactionEventService.deleteTransactionEventById(id);
+    }
 }

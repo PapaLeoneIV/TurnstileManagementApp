@@ -1,10 +1,14 @@
 package it.tdgc.turnstile.model;
 
+import it.tdgc.turnstile.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 
 
 @Entity
@@ -13,7 +17,9 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users{
+@SQLRestriction("state = 'EXIST'")
+@SQLDelete(sql = "UPDATE users SET state = 'DELETED' WHERE id = ?")
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
@@ -40,6 +46,9 @@ public class Users{
     @JoinColumn(name = "company_id")
     private Company company;
 
+
+    @Column(name = "state", columnDefinition = "STATE VARCHAR(25) DEFAULT 'EXIST'")
+    private String state = "EXIST";
 
     @OneToOne
     @JoinColumn(name = "badge_id")

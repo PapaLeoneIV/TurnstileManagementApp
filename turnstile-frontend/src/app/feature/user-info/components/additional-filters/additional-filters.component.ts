@@ -7,16 +7,19 @@ import {Observable, Subject, takeUntil, take} from 'rxjs';
 import {ApiResponse} from '@shared/models/api-response';
 import { CompanyService } from '@core/service/company.service';
 import { RoleService } from '@core/service/role.service'
+import { NgClass, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-additional-filters',
+  imports: [NgFor, NgClass],
   templateUrl: './additional-filters.component.html',
   styleUrl: './additional-filters.component.css'
 })
 export class AdditionalFiltersComponent implements OnInit, OnDestroy {
   mainFilter: string = "";
   additionFilters: string[] = [];
-  
+  selectedItem: string | null = null;
+
   private destroy$ = new Subject<void>();
   constructor(
     private buttonFilterService: ButtonFilterService,
@@ -30,6 +33,7 @@ export class AdditionalFiltersComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(filter: string) {
+    this.selectedItem = filter;
     let observable: Observable<ApiResponse<UserDTO>> | null = null;
     switch (this.mainFilter) {
       case qf.BY_COMPANY:

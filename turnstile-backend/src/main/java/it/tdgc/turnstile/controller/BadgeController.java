@@ -21,7 +21,7 @@ public class BadgeController {
         this.badgeService = badgeService;
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/search/id/{id}")
     public ResponseEntity<ApiResponse<BadgeDTO>> getBadgeById(@PathVariable("id") Integer id) {
         return badgeService.getBadgeById(id);
     }

@@ -7,10 +7,12 @@ import { ApiResponse } from '@shared/models/api-response';
 import { UserDTO } from '@core/dto/user-dto';
 import { queryFilters } from '@shared/models/enum';
 import { mapUserDTO } from '@utils/Mapper';
+import { NgClass, NgFor } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-filter-list',
-  imports: [],
+  imports: [NgFor, NgClass, RouterModule],
   templateUrl: './filter-list.component.html',
   styleUrl: './filter-list.component.css'
 })
@@ -22,10 +24,13 @@ export class FilterListComponent {
     private mainFilterService: MainFilterService
   ) {
   }
+  selectedItem: string | null = null;
 
 
   updateData(filter: string) {
     let observable: Observable<ApiResponse<UserDTO>> | null = null;
+
+    this.selectedItem = filter;
 
     switch (filter) {
       case queryFilters.ALL_USERS:

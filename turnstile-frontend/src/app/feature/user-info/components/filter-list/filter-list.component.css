@@ -1,0 +1,5 @@
+.active-nav-item  {
+    background-color: rgba(27, 155, 180, 0.76); /* Bootstrap primary */
+    color: black !important;
+    font-weight: bold;
+  }

@@ -1,0 +1,5 @@
+.container-xxl{
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 70%; /* or 950px */
+}

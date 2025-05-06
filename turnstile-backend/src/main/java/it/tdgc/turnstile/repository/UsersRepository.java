@@ -1,6 +1,8 @@
 package it.tdgc.turnstile.repository;
 
+import it.tdgc.turnstile.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -39,4 +41,10 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
     List<Users> findByCompany(@Param("name") String name, @Param("userType") String userType);
 
     boolean existsUsersByEmail(String email);
+
+    List<Users> findUsersByRoleId(Integer roleId);
+
+    @Modifying
+    @Query("UPDATE Users u SET u.role = :role WHERE u.role.id= :id ")
+    void updateUserRole(Role role, Integer id);
 }
